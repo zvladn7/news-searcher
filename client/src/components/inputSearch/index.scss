@@ -1,0 +1,129 @@
+.input-search {
+  position: relative;
+  width: 100%;
+  min-height: 35px;
+
+  &__content-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0 10px;
+    background: $white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__content {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    width: 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background: none;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      fill: $black;
+    }
+
+    &--indent-right {
+      margin-right: 9px;
+    }
+
+    &--click-effect {
+      &:hover {
+        opacity: 0.6;
+      }
+
+      &:active {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__history {
+    border-top: 1px solid $black;
+    padding: 10px 0 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__history-item-text {
+    width: 100%;
+    margin: 0 5px;
+    @include text-2;
+    color: $gray-3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__history-item-icon {
+    width: 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      fill: $gray-3;
+    }
+
+    &--trash {
+      svg {
+        fill: none;
+        stroke: $gray-3;
+      }
+
+      &:hover {
+        opacity: 0.6;
+      }
+
+      &:active {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__history-item {
+    width: 100%;
+    height: 30px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+
+    &:hover {
+      background: $purple;
+
+      .input-search__history-item-text {
+        color: $white;
+      }
+
+      .input-search__history-item-icon {
+        svg {
+          fill: white;
+        }
+
+        &--trash {
+          svg {
+            fill: none;
+            stroke: $white;
+          }
+        }
+      }
+    }
+  }
+}
