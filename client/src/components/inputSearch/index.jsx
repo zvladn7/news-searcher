@@ -6,19 +6,17 @@ import CloseIcon from '../../assets/svg/closeIcon';
 import ClockIcon from '../../assets/svg/clockIcon';
 import TrashIcon from '../../assets/svg/trashIcon';
 import { useOutsideClick } from '../../hooks/events';
-import { inputSearchHistory } from '../../mocks/inputSearch';
 
 const HISTORY_COUNT = 10;
 
 const InputSearch = (props) => {
-  const {placeholder, onEnterDown} = props;
+  const {placeholder, history, onEnterDown, onDeleteHistoryItem} = props;
 
-  const ref = useRef(null);
+  const componentRef = useRef(null);
   const [value, setValue] = useState('');
-  const [queries, setQueries] = useState(inputSearchHistory);
   const [isFocus, setIsFocus] = useState(false);
 
-  useOutsideClick(ref, () => setIsFocus(false));
+  useOutsideClick(componentRef, () => setIsFocus(false));
 
   const handleOnFocusInput = () => setIsFocus(true);
 
@@ -26,43 +24,26 @@ const InputSearch = (props) => {
 
   const handleOnClickDeleteIcon = () => setValue('');
 
-  const handleNewHistoryItem = useCallback((value) => {
+  const handleOnEnterDown = useCallback(() => {
     if (!value) {
       return;
     }
 
-    const newQueries = [...queries];
-    const index = newQueries.indexOf(value);
-    if (index >= -1) {
-      newQueries.splice(index, 1);
-    }
-
-    newQueries.unshift(value);
-    setQueries(newQueries);
-  }, [queries]);
-
-  const handleOnEnterDown = useCallback(() => {
     onEnterDown(value);
-    handleNewHistoryItem(value);
   }, [value, onEnterDown]);
 
   const handleOnClickHistoryItem = useCallback((query) => {
-    setValue(query);
-    handleNewHistoryItem(query);
-  }, [onEnterDown]);
-
-  const handleOnDeleteHistoryItem = useCallback((query) => {
-    const newQueries = [...queries];
-    const index = newQueries.indexOf(query);
-    if (index >= -1) {
-      newQueries.splice(index, 1);
-      setQueries(newQueries);
+    if (!query) {
+      return;
     }
-  }, [queries]);
+
+    setValue(query);
+    onEnterDown(query);
+  }, [onEnterDown]);
 
   return (
     <div className="input-search">
-      <div className="input-search__content-wrapper" ref={ref}>
+      <div className="input-search__content-wrapper" ref={componentRef}>
         <div className="input-search__content">
           <div className="input-search__icon input-search__icon--indent-right">
             <SearchIcon />
@@ -80,7 +61,7 @@ const InputSearch = (props) => {
         </div>
         {isFocus && !value && (
           <div className="input-search__history">
-            {queries.slice(0, HISTORY_COUNT).map((query, order) => (
+            {history.slice(0, HISTORY_COUNT).map((query, order) => (
               <div className="input-search__history-item" key={`input-search__history-ite__${order}`}>
                 <div className="input-search__history-item-icon">
                   <ClockIcon />
@@ -93,7 +74,7 @@ const InputSearch = (props) => {
                 </span>
                 <div
                   className="input-search__history-item-icon input-search__history-item-icon--trash"
-                  onClick={() => handleOnDeleteHistoryItem(query)}
+                  onClick={() => onDeleteHistoryItem(query)}
                 >
                   <TrashIcon />
                 </div>
@@ -108,12 +89,16 @@ const InputSearch = (props) => {
 
 InputSearch.propTypes = {
   placeholder: PropTypes.string,
+  history: PropTypes.arrayOf(PropTypes.string),
   onEnterDown: PropTypes.func,
+  onDeleteHistoryItem: PropTypes.func,
 };
 
 InputSearch.defaultProps = {
   placeholder: 'Поиск в новостях...',
+  history: [],
   onEnterDown: () => {},
+  onDeleteHistoryItem: () => {},
 };
 
 export default InputSearch;
