@@ -5,3 +5,19 @@
   font-size: $logo-heading-font-size;
   line-height: $logo-heading-line-height;
 }
+
+@mixin text-1 {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: $text-1-font-size;
+  line-height: $text-1-line-height;
+}
+
+@mixin text-2 {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 300;
+  font-size: $text-2-font-size;
+  line-height: $text-2-line-height;
+}
