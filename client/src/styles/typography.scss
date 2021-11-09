@@ -1,0 +1,7 @@
+@mixin logo-heading {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 900;
+  font-size: $logo-heading-font-size;
+  line-height: $logo-heading-line-height;
+}
