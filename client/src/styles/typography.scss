@@ -21,3 +21,14 @@
   font-size: $text-2-font-size;
   line-height: $text-2-line-height;
 }
+
+@mixin text-button {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: $text-button-font-size;
+  line-height: $text-button-line-height;
+
+  text-transform: uppercase;
+  font-feature-settings: 'cpsp' on;
+}
