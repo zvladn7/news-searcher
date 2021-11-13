@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Input from '../ui/input';
 import SearchIcon from '../../assets/svg/searchIcon';
@@ -10,13 +10,20 @@ import { useOutsideClick } from '../../hooks/events';
 const HISTORY_COUNT = 10;
 
 const InputSearch = (props) => {
-  const {placeholder, history, onEnterDown, onDeleteHistoryItem} = props;
+  const { query, placeholder, history, onEnterDown, onDeleteHistoryItem} = props;
 
   const componentRef = useRef(null);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(query);
   const [isFocus, setIsFocus] = useState(false);
 
   useOutsideClick(componentRef, () => setIsFocus(false));
+
+  useEffect(() => {
+    if (query) {
+      setValue(query);
+      onEnterDown(query);
+    }
+  }, [query]);
 
   const handleOnFocusInput = () => setIsFocus(true);
 
@@ -88,6 +95,7 @@ const InputSearch = (props) => {
 };
 
 InputSearch.propTypes = {
+  query: PropTypes.string,
   placeholder: PropTypes.string,
   history: PropTypes.arrayOf(PropTypes.string),
   onEnterDown: PropTypes.func,
@@ -95,6 +103,7 @@ InputSearch.propTypes = {
 };
 
 InputSearch.defaultProps = {
+  query: '',
   placeholder: 'Поиск в новостях...',
   history: [],
   onEnterDown: () => {},
