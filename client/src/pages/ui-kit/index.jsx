@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import InputSearch from '../../components/inputSearch';
 import { inputSearchHistory } from '../../mocks/inputSearch';
+import SearchButton from '../../components/ui/searchButton';
 
 const UiKit = () => {
   // TODO: вынести в класс с историей поиска
@@ -34,6 +35,9 @@ const UiKit = () => {
           onDeleteHistoryItem={handleOnDeleteHistoryItem}
           history={inputSearchHistoryQueries}
         />
+      </div>
+      <div className="ui-kit__component">
+        <SearchButton text='Search' onClick={() => console.log('Search button click!')} />
       </div>
     </div>
   );
