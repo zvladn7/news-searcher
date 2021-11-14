@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "cache.redis.port",
+      "type": "java.lang.Integer",
+      "description": "The port of application cache implemented via Redis."
+    },
+    {
+      "name": "cache.redis.host",
+      "type": "java.lang.String",
+      "description": "The host of application cache implemented via Redis."
+    }
+  ] }
