@@ -6,7 +6,7 @@ const SearchButton = (props) => {
 
   return (
     <button
-      className='search-button'
+      className="search-button"
       onClick={onClick}
       disabled={disabled}
     >
