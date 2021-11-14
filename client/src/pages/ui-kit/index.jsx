@@ -9,6 +9,8 @@ import { blockResultSearch } from '../../mocks/blockResultSearch';
 import SimilarQueries from '../../components/ui/similarQueries';
 import { similarQueries } from '../../mocks/similarQueries';
 import { useWindowSize } from '../../hooks/useWindowSize';
+import TermsBlock from '../../components/ui/termsBlock';
+import { termsSuggestions } from '../../mocks/termsBlock';
 
 const UiKit = () => {
   // TODO: вынести в класс с историей поиска
@@ -44,7 +46,7 @@ const UiKit = () => {
   }, [languageButtonType]);
 
   const windowSize = useWindowSize();
-  const { viewType } = windowSize;
+  const {viewType} = windowSize;
 
   const handleOnClickItemSimilarQueries = (query) => {
     setInputSearchValue(query);
@@ -79,6 +81,9 @@ const UiKit = () => {
           onClickItem={handleOnClickItemSimilarQueries}
           viewType={viewType}
         />
+      </div>
+      <div className="ui-kit__component">
+        <TermsBlock title={termsSuggestions.title} terms={termsSuggestions.terms} />
       </div>
     </div>
   );
