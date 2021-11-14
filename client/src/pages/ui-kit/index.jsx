@@ -88,7 +88,7 @@ const UiKit = () => {
         <TermsBlock title={termsSuggestions.title} terms={termsSuggestions.terms} />
       </div>
       <div className="ui-kit__component">
-        <ImageBlock title={imageResult.title} imageUrl={imageResult.images} link={imageResult.link} />
+        <ImageBlock title={imageResult.title} imageUrl={imageResult.imageUrl} link={imageResult.link} />
       </div>
     </div>
   );
