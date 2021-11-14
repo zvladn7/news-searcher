@@ -11,6 +11,8 @@ import { similarQueries } from '../../mocks/similarQueries';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import TermsBlock from '../../components/ui/termsBlock';
 import { termsSuggestions } from '../../mocks/termsBlock';
+import ImageBlock from '../../components/ui/imageBlock';
+import { imageResult } from '../../mocks/imageBlock';
 
 const UiKit = () => {
   // TODO: вынести в класс с историей поиска
@@ -84,6 +86,9 @@ const UiKit = () => {
       </div>
       <div className="ui-kit__component">
         <TermsBlock title={termsSuggestions.title} terms={termsSuggestions.terms} />
+      </div>
+      <div className="ui-kit__component">
+        <ImageBlock title={imageResult.title} imageUrl={imageResult.imageUrl} link={imageResult.link} />
       </div>
     </div>
   );

@@ -1,0 +1,60 @@
+.image-block {
+  position: relative;
+  height: 120px;
+  min-width: 135px;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  outline: none;
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 50px;
+    object-fit: cover;
+  }
+
+  &__bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &__title {
+    @include text-2;
+    font-weight: bold;
+    color: $black;
+    width: 100%;
+    height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__link {
+    @include text-2;
+    font-weight: normal;
+    color: $gray-3;
+    width: 100%;
+    height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @include media-breakpoint-up(md) {
+    height: 200px;
+    min-width: 200px;
+  }
+}
