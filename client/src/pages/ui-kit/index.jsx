@@ -4,6 +4,8 @@ import { inputSearchHistory } from '../../mocks/inputSearch';
 import SearchButton from '../../components/ui/searchButton';
 import LanguageButton from '../../components/ui/languageButton';
 import { LANGUAGE_BUTTON_TYPE } from '../../components/ui/languageButton/config';
+import BlockResultSearch from '../../components/ui/blockResultSearch';
+import { blockResultSearch } from '../../mocks/blockResultSearch';
 
 const UiKit = () => {
   // TODO: вынести в класс с историей поиска
@@ -51,6 +53,9 @@ const UiKit = () => {
       </div>
       <div className="ui-kit__component">
         <LanguageButton type={languageButtonType} onClick={handleOnClickLanguageButton} />
+      </div>
+      <div className="ui-kit__component">
+        <BlockResultSearch title={blockResultSearch.searchItems[0].title} link={blockResultSearch.searchItems[0].link} />
       </div>
     </div>
   );

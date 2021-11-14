@@ -32,3 +32,19 @@
   text-transform: uppercase;
   font-feature-settings: 'cpsp' on;
 }
+
+@mixin text-result {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: $text-result-font-size;
+  line-height: $text-result-line-height;
+}
+
+@mixin link {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: $link-font-size;
+  line-height: $link-line-height;
+}
