@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Input from '../ui/input';
 import SearchIcon from '../../assets/svg/searchIcon';
@@ -10,26 +10,14 @@ import { useOutsideClick } from '../../hooks/events';
 const HISTORY_COUNT = 10;
 
 const InputSearch = (props) => {
-  const { query, placeholder, history, onEnterDown, onDeleteHistoryItem} = props;
+  const {value, onChange, placeholder, history, onEnterDown, onDeleteHistoryItem} = props;
 
   const componentRef = useRef(null);
-  const [value, setValue] = useState(query);
   const [isFocus, setIsFocus] = useState(false);
 
   useOutsideClick(componentRef, () => setIsFocus(false));
 
-  useEffect(() => {
-    if (query) {
-      setValue(query);
-      onEnterDown(query);
-    }
-  }, [query]);
-
   const handleOnFocusInput = () => setIsFocus(true);
-
-  const handleOnChangeValue = (event) => setValue(event.target.value);
-
-  const handleOnClickDeleteIcon = () => setValue('');
 
   const handleOnEnterDown = useCallback(() => {
     if (!value) {
@@ -44,7 +32,7 @@ const InputSearch = (props) => {
       return;
     }
 
-    setValue(query);
+    onChange(query);
     onEnterDown(query);
   }, [onEnterDown]);
 
@@ -57,12 +45,12 @@ const InputSearch = (props) => {
           </div>
           <Input
             value={value}
-            onChange={handleOnChangeValue}
+            onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
             onEnterDown={handleOnEnterDown}
             onFocus={handleOnFocusInput}
           />
-          <div className="input-search__icon input-search__icon--click-effect" onClick={handleOnClickDeleteIcon}>
+          <div className="input-search__icon input-search__icon--click-effect" onClick={() => onChange('')}>
             <CloseIcon />
           </div>
         </div>
@@ -95,7 +83,8 @@ const InputSearch = (props) => {
 };
 
 InputSearch.propTypes = {
-  query: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
   placeholder: PropTypes.string,
   history: PropTypes.arrayOf(PropTypes.string),
   onEnterDown: PropTypes.func,
@@ -103,7 +92,8 @@ InputSearch.propTypes = {
 };
 
 InputSearch.defaultProps = {
-  query: '',
+  value: '',
+  onChange: () => {},
   placeholder: 'Поиск в новостях...',
   history: [],
   onEnterDown: () => {},
