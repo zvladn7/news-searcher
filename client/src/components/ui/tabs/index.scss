@@ -1,0 +1,32 @@
+.tabs {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    cursor: pointer;
+    min-width: 65px;
+    padding: 10px 12px;
+    margin-right: 30px;
+    background: none;
+    text-align: center;
+    align-items: center;
+    border-bottom: 5px solid transparent;
+
+    &:active {
+      background: none;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &--select {
+      border-bottom: 5px solid $purple;
+    }
+  }
+
+  &__item-title {
+    @include text-tab;
+    color: $black;
+  }
+}
