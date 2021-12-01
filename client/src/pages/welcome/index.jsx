@@ -2,7 +2,12 @@ import React, { useCallback, useState } from 'react';
 import InputSearch from '../../components/inputSearch';
 import SearchButton from '../../components/ui/searchButton';
 import { useQueryParams } from '../../hooks/useQueryParams';
-import { SEARCH_PAGE_PATH, SEARCH_VALUE_QUERY_PARAMETER } from '../../constants/url';
+import {
+  PAGE_QUERY_PARAMETER,
+  SEARCH_PAGE_PATH,
+  SEARCH_VALUE_QUERY_PARAMETER,
+  TAB_QUERY_PARAMETER,
+} from '../../constants/url';
 import { useLanguage } from '../../hooks/useLanguage';
 import { searchButtonText, searchInputPlaceholder } from '../../constants/language';
 import { useQueriesStorage } from '../../hooks/useQueriesStorage';
@@ -17,7 +22,11 @@ const Welcome = () => {
 
   const handleOnSearch = useCallback((query) => {
     addQueryIntoHistory(query);
-    navigateWithQueryParams(SEARCH_PAGE_PATH, {[SEARCH_VALUE_QUERY_PARAMETER]: query});
+    navigateWithQueryParams(SEARCH_PAGE_PATH, {
+      [SEARCH_VALUE_QUERY_PARAMETER]: query,
+      [TAB_QUERY_PARAMETER]: 0,
+      [PAGE_QUERY_PARAMETER]: 0,
+    });
   }, [addQueryIntoHistory]);
 
   return (

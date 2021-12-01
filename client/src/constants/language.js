@@ -1,6 +1,11 @@
 export const RUSSIAN_LANGUAGE = 'RU';
 export const ENGLISH_LANGUAGE = 'EN';
 
+export const loaderText = {
+  RU: 'Поиск',
+  EN: 'Searching',
+}
+
 export const searchInputPlaceholder = {
   RU: 'Найти в новостях...',
   EN: 'Search in news...',
