@@ -28,12 +28,6 @@
     padding: 20px 16px 80px;
   }
 
-  &__content-count {
-    @include text-2;
-    font-weight: 500;
-    color: $gray-3;
-  }
-
   &__content-item {
     max-width: 540px;
     margin-bottom: 20px;

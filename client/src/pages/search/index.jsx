@@ -29,6 +29,8 @@ import { resultsImage } from '../../mocks/resultsImage';
 import ImageBlock from '../../components/ui/imageBlock';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Scrollbars } from 'react-custom-scrollbars';
+import SearchCount from '../../components/ui/searchCount';
+import NotFound from '../../components/notFound';
 
 const Search = () => {
   const [queryParams, navigateWithQueryParams] = useQueryParams();
@@ -69,6 +71,7 @@ const Search = () => {
       [TAB_QUERY_PARAMETER]: tab,
       [PAGE_QUERY_PARAMETER]: 0,
     });
+    setInputSearchValue(query);
   }, [addQueryIntoHistory, tab]);
 
   const handleOnChangeTab = useCallback((tabId) => {
@@ -119,10 +122,8 @@ const Search = () => {
                   <Loader text={loaderText[language]} />
                 ) : (
                   <>
-                    <div
-                      className="search__content-count search__content-item"
-                    >
-                      {`${aboutResultsTextFirstPart[language]} ${resultCount.toLocaleString()} ${aboutResultsTextSecondPart[language]}`}
+                    <div className="search__content-item">
+                      <SearchCount language={language} resultCount={resultCount} />
                     </div>
                     <div className="search__content-item">
                       <BlockResultSearch
@@ -165,7 +166,14 @@ const Search = () => {
                     />
                   </>
                 ) : (
-                  <div className="search__content-not-found" />
+                  <>
+                    <div className="search__content-item">
+                      <SearchCount language={language} resultCount={resultCount} />
+                    </div>
+                    <div className="search__content-item">
+                      <NotFound language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''} />
+                    </div>
+                  </>
                 )}
             </div>
           </Scrollbars>
@@ -196,7 +204,9 @@ const Search = () => {
                   )}
                 </InfiniteScroll>
               ) : (
-                <div className="search__content-not-found" />
+                <div className="search__content-item">
+                  <NotFound language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''} />
+                </div>
               )}
             </div>
           </Scrollbars>
