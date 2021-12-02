@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LANGUAGE_BUTTON_ICONS, LANGUAGE_BUTTON_STRINGS, LANGUAGE_BUTTON_TYPE } from './config';
+import { LANGUAGE_BUTTON_ICONS, LANGUAGE_BUTTON_STRINGS } from './config';
+import { ENGLISH_LANGUAGE } from '../../../constants/language';
 
 const LanguageButton = (props) => {
   const {type, onClick, disabled} = props;
 
-  const FlagIcon = LANGUAGE_BUTTON_ICONS[type] || LANGUAGE_BUTTON_ICONS.english;
+  const FlagIcon = LANGUAGE_BUTTON_ICONS[type] || LANGUAGE_BUTTON_ICONS.EN;
 
   return (
     <button
@@ -18,7 +19,7 @@ const LanguageButton = (props) => {
           <FlagIcon />
         </div>
         <span className="language-button__text">
-          {LANGUAGE_BUTTON_STRINGS[type] || LANGUAGE_BUTTON_STRINGS.english}
+          {LANGUAGE_BUTTON_STRINGS[type] || LANGUAGE_BUTTON_STRINGS.EN}
         </span>
       </div>
     </button>
@@ -32,7 +33,7 @@ LanguageButton.propTypes = {
 };
 
 LanguageButton.defaultProps = {
-  type: LANGUAGE_BUTTON_TYPE.english,
+  type: ENGLISH_LANGUAGE,
   onClick: () => {},
   disabled: false,
 };

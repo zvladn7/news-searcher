@@ -3,7 +3,6 @@ import InputSearch from '../../components/inputSearch';
 import { inputSearchHistory } from '../../mocks/inputSearch';
 import SearchButton from '../../components/ui/searchButton';
 import LanguageButton from '../../components/ui/languageButton';
-import { LANGUAGE_BUTTON_TYPE } from '../../components/ui/languageButton/config';
 import BlockResultSearch from '../../components/ui/blockResultSearch';
 import { blockResultSearch } from '../../mocks/blockResultSearch';
 import SimilarQueries from '../../components/ui/similarQueries';
@@ -13,6 +12,7 @@ import TermsBlock from '../../components/ui/termsBlock';
 import { termsSuggestions } from '../../mocks/termsBlock';
 import ImageBlock from '../../components/ui/imageBlock';
 import { imageResult } from '../../mocks/imageBlock';
+import { ENGLISH_LANGUAGE, RUSSIAN_LANGUAGE } from '../../constants/language';
 
 const UiKit = () => {
   // TODO: вынести в класс с историей поиска
@@ -39,12 +39,12 @@ const UiKit = () => {
     }
   }, [inputSearchHistoryQueries]);
 
-  const [languageButtonType, setLanguageButtonType] = useState(LANGUAGE_BUTTON_TYPE.english);
+  const [languageButtonType, setLanguageButtonType] = useState(ENGLISH_LANGUAGE);
 
   const handleOnClickLanguageButton = useCallback(() => {
-    languageButtonType === LANGUAGE_BUTTON_TYPE.english
-      ? setLanguageButtonType(LANGUAGE_BUTTON_TYPE.russian)
-      : setLanguageButtonType(LANGUAGE_BUTTON_TYPE.english);
+    languageButtonType === ENGLISH_LANGUAGE
+      ? setLanguageButtonType(RUSSIAN_LANGUAGE)
+      : setLanguageButtonType(ENGLISH_LANGUAGE);
   }, [languageButtonType]);
 
   const windowSize = useWindowSize();

@@ -49,6 +49,16 @@
   line-height: $text-result-line-height;
 }
 
+@mixin text-tab {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: $text-tab-font-size;
+  line-height: $text-tab-line-height;
+
+  text-transform: uppercase;
+}
+
 @mixin link {
   font-family: Roboto;
   font-style: normal;
