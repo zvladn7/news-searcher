@@ -1,15 +1,8 @@
 import { useCallback, useState } from 'react';
+import { getFromLocalStorage, setToLocalStorage } from '../utils/localStorage';
 
 const LOCAL_STORAGE_KEY = 'news-searcher-queries-history';
 const MAX_COUNT_QUERIES_IN_HISTORY = 100;
-
-const getFromLocalStorage = (key = LOCAL_STORAGE_KEY) => {
-  return JSON.parse(localStorage.getItem(key));
-};
-
-const setToLocalStorage = (key = LOCAL_STORAGE_KEY, value = []) => {
-  localStorage.setItem(key, JSON.stringify(value));
-};
 
 export const useQueriesStorage = () => {
   const [queriesHistory, setQueriesHistory] = useState(getFromLocalStorage(LOCAL_STORAGE_KEY) || []);
