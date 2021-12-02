@@ -1,0 +1,43 @@
+.welcome {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: $white;
+  background-image: url("../../assets/images/backgroundWelcome.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: repeat;
+  padding: 10% 15px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+
+  &__title {
+    @include logo-heading;
+    font-size: $logo-heading-font-size-mobile;
+    line-height: $logo-heading-line-height-mobile;
+    color: $white;
+  }
+
+  &__search-input {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  @include media-breakpoint-up(md) {
+    &__title {
+      font-size: $logo-heading-font-size-tablet;
+      line-height: $logo-heading-line-height-tablet;
+    }
+  }
+
+  @include media-breakpoint-up(xl) {
+    &__title {
+      font-size: $logo-heading-font-size;
+      line-height: $logo-heading-line-height;
+    }
+  }
+}

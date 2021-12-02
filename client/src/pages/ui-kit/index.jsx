@@ -58,7 +58,8 @@ const UiKit = () => {
     <div className="ui-kit">
       <div className="ui-kit__component">
         <InputSearch
-          query={inputSearchValue}
+          value={inputSearchValue}
+          onChange={(value) => setInputSearchValue(value)}
           onEnterDown={handleOnEnterDown}
           onDeleteHistoryItem={handleOnDeleteHistoryItem}
           history={inputSearchHistoryQueries}
