@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.spbstu.news.searcher.cache.Cache;
 import ru.spbstu.news.searcher.cache.SearchCacheItem;
+import ru.spbstu.news.searcher.controller.request.ItemToIndex;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.ImageItem;
@@ -19,13 +20,13 @@ import ru.spbstu.news.searcher.database.SearchResultRepository;
 import ru.spbstu.news.searcher.exception.ResultNotFoundException;
 import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 import ru.spbstu.news.searcher.indexes.component.IndexSearcherComponent;
+import ru.spbstu.news.searcher.indexes.component.IndexWriterComponent;
+import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ public class SearchResultService {
 
     private final SearchResultRepository searchResultRepository;
     private final IndexSearcherComponent indexSearcherComponent;
+    private final IndexWriterComponent indexWriterComponent;
     private final Cache cache;
     private final ImageSearchResultsProcessor imageSearchResultsProcessor;
     private final TextSearchResultsProcessor textSearchResultsProcessor;
@@ -46,11 +48,13 @@ public class SearchResultService {
     @Autowired
     public SearchResultService(@NotNull final SearchResultRepository searchResultRepository,
                                @NotNull final IndexSearcherComponent indexSearcherComponent,
+                               @NotNull IndexWriterComponent indexWriterComponent,
                                @NotNull final Cache cache,
                                @NotNull final ImageSearchResultsProcessor imageSearchResultsProcessor,
                                @NotNull final TextSearchResultsProcessor textSearchResultsProcessor) {
         this.searchResultRepository = searchResultRepository;
         this.indexSearcherComponent = indexSearcherComponent;
+        this.indexWriterComponent = indexWriterComponent;
         this.cache = cache;
         this.imageSearchResultsProcessor = imageSearchResultsProcessor;
         this.textSearchResultsProcessor = textSearchResultsProcessor;
@@ -168,7 +172,7 @@ public class SearchResultService {
                                                          Long cacheTotalCount) {
         int startIndex = (page - 1) * (pageSize);
         int endIndex = startIndex + pageSize;
-        cacheItems = cacheItems.subList(startIndex, endIndex);
+        cacheItems = cacheItems.subList(startIndex, Math.min(endIndex, cacheItems.size()));
         List<ImageItem> imageItems = new ArrayList<>();
         for (SearchCacheItem cacheItem : cacheItems) {
             List<String> imageUrls = cacheItem.getImageUrls();
@@ -182,6 +186,13 @@ public class SearchResultService {
             }
         }
         return new FindImageResult(imageItems, cacheTotalCount);
+    }
+
+    public void index(@NotNull ItemToIndex itemToIndex) throws LuceneOpenException {
+        SearchResult searchResult = new SearchResult(itemToIndex.getUrl(), itemToIndex.getImageUrls());
+        SearchResult save = searchResultRepository.save(searchResult);
+        SearchIndexDocument searchIndexDocument = new SearchIndexDocument(save.getId(), itemToIndex.getText());
+        indexWriterComponent.index(searchIndexDocument);
     }
 
 }

@@ -32,8 +32,7 @@ public class TextSearchResultsProcessor implements SearchResultsProcessor<FindBy
                     .map(entity -> {
                         SearchIndexDocument searchIndexDocument = databaseIdsToDocument.get(entity.getId());
                         String fullText = searchIndexDocument.getFullText();
-                        int indexOfQuery = fullText.indexOf(query);
-                        String title = fullText.substring(indexOfQuery, indexOfQuery + SearchResultService.DEFAULT_TITLE_LENGTH);
+                        String title = fullText.substring(0, SearchResultService.DEFAULT_TITLE_LENGTH);
                         return Pair.create(
                                 new SearchItem(entity.getId(), entity.getUrl(), title),
                                 new SearchCacheItem(entity.getId(), title, entity.getUrl(), entity.getImageUrls()));

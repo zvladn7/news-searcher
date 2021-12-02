@@ -6,15 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.spbstu.news.searcher.controller.request.FindImagesRequest;
+import ru.spbstu.news.searcher.controller.request.ItemToIndex;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.SimilarItem;
+import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 import ru.spbstu.news.searcher.service.SearchResultService;
 
 import java.util.List;
@@ -59,6 +57,17 @@ public class SearchController {
             return ResponseEntity.ok(imageResults);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/index")
+    public ResponseEntity<?> index(@NotNull @RequestBody ItemToIndex itemToIndex) {
+        Validate.notNull(itemToIndex);
+        try {
+            searchResultService.index(itemToIndex);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (LuceneOpenException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

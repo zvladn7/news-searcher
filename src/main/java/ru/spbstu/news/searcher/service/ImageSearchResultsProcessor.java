@@ -37,8 +37,7 @@ public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindI
         for (SearchResult searchResult : databaseEntities) {
             SearchIndexDocument searchIndexDocument = databaseIdsToDocument.get(searchResult.getId());
             String fullText = searchIndexDocument.getFullText();
-            int indexOfQuery = fullText.indexOf(query);
-            String title = fullText.substring(indexOfQuery, indexOfQuery + SearchResultService.DEFAULT_TITLE_LENGTH);
+            String title = fullText.substring(0, SearchResultService.DEFAULT_TITLE_LENGTH);
             List<String> imageUrls = searchResult.getImageUrls();
             if (CollectionUtils.isNotEmpty(imageItems)) {
                 for (String imageUrl : imageUrls) {

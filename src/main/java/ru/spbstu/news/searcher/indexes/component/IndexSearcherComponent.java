@@ -1,6 +1,7 @@
 package ru.spbstu.news.searcher.indexes.component;
 
 import org.apache.commons.math3.util.Pair;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +84,13 @@ public class IndexSearcherComponent implements Searcher {
     @NotNull
     public Pair<List<SearchIndexDocument>, Long> searchIndexDocuments(@Nullable String textQuery,
                                                                       @NotNull Integer docsCount) {
-        Query query = SearchIndexDocumentConverter.createQuery(textQuery);
+        Query query;
+        try {
+            query = SearchIndexDocumentConverter.createQuery(textQuery);
+        } catch (ParseException e) {
+            logger.warn("Cannot parse query", e);
+            return Pair.create(Collections.emptyList(), 0L);
+        }
         if (query == null) {
             logger.warn("Provided query is null");
             return Pair.create(Collections.emptyList(), 0L);

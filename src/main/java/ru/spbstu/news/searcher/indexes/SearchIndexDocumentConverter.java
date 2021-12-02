@@ -1,16 +1,17 @@
 package ru.spbstu.news.searcher.indexes;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.BytesRef;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -23,13 +24,14 @@ public class SearchIndexDocumentConverter {
     private static final String DATABASE_ID_FIELD = "database_id";
     private static final String FULL_TEXT_FIELD = "full_text";
 
+    private static final Analyzer analyzer = AnalyzerProvider.provide();
+
     @Nullable
-    public static Query createQuery(@Nullable String query) {
+    public static Query createQuery(@Nullable String query) throws ParseException {
         if (query == null) {
             return null;
         }
-        Term term = new Term(FULL_TEXT_FIELD, query);
-        return new TermQuery(term);
+        return new QueryParser(FULL_TEXT_FIELD, analyzer).parse(query);
     }
 
     public static Sort createSort() {
@@ -51,8 +53,9 @@ public class SearchIndexDocumentConverter {
             return null;
         }
         Document document = new Document();
-        document.add(new NumericDocValuesField(DATABASE_ID_FIELD, databaseId));
+        document.add(new StoredField(DATABASE_ID_FIELD, databaseId));
         document.add(new TextField(FULL_TEXT_FIELD, fullText, Field.Store.YES));
+        document.add(new SortedDocValuesField(FULL_TEXT_FIELD, new BytesRef(fullText)));
 
         return document;
     }
