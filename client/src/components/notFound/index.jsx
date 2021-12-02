@@ -47,7 +47,7 @@ NotFound.propTypes = {
 };
 
 NotFound.defaultProps = {
-  searchQuery: PropTypes.string,
+  searchQuery: '',
   language: RUSSIAN_LANGUAGE,
 };
 
