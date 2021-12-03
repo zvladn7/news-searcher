@@ -25,6 +25,9 @@ import Loader from '../../components/ui/loader';
 import ReactPaginate from 'react-paginate';
 import ArrowLeft from '../../assets/svg/arrowLeft';
 import ArrowRight from '../../assets/svg/arrowRight';
+import { resultsImage } from '../../mocks/resultsImage';
+import ImageBlock from '../../components/ui/imageBlock';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Search = () => {
   const [queryParams, navigateWithQueryParams] = useQueryParams();
@@ -53,6 +56,8 @@ const Search = () => {
   const [result, setResult] = useState(resultsText.searchItems);
   const [resultCount, setResultCount] = useState(resultsText.totalCount);
   const [similarQuery, setSimilarQuery] = useState(similarQueries);
+
+  const [resultImage, setResultImage] = useState(resultsImage);
 
   const handleOnChangeInputSearchValue = (value) => setInputSearchValue(value);
 
@@ -83,6 +88,10 @@ const Search = () => {
     });
   }, [inputSearchValue, tab]);
 
+  const handleOnNextImagePage = useCallback(() => {
+    setTimeout(() => setResultImage([...resultImage, ...resultsImage]), 5000);
+  }, [resultImage]);
+
   return (
     <div className="search">
       <div className="search__header">
@@ -98,7 +107,7 @@ const Search = () => {
           onChangeTab={handleOnChangeTab}
         />
       </div>
-      <div className="search__content-wrapper">
+      <div className="search__content-wrapper" id="search__content-wrapper">
         {tab === 0 && (
           <div className="search__content">
             {!!result && result.length > 0 ?
@@ -154,6 +163,32 @@ const Search = () => {
               ) : (
                 <div className="search__content-not-found" />
               )}
+          </div>
+        )}
+        {tab === 1 && (
+          <div className="search__content">
+            {!!resultImage && resultImage.length > 0 ? (
+              <InfiniteScroll
+                hasMore={true}
+                next={handleOnNextImagePage}
+                loader={
+                  <div className="search__content-images-loader">
+                    <Loader text={loaderText[language]} />
+                  </div>
+                }
+                dataLength={resultImage.length}
+                className="search__content-images"
+                scrollableTarget="search__content-wrapper"
+              >
+                {resultImage.map((image) =>
+                  <div className="search__content-images-item" key={`search__content-images-item-${image.id}`}>
+                    <ImageBlock title={image.title} link={image.link} imageUrl={image.images} />
+                  </div>,
+                )}
+              </InfiniteScroll>
+            ) : (
+              <div className="search__content-not-found" />
+            )}
           </div>
         )}
       </div>
