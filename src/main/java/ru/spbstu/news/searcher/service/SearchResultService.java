@@ -127,7 +127,7 @@ public class SearchResultService {
                                               @NotNull Long cacheTotalCount) {
         int startIndex = (page - 1) * (pageSize);
         int endIndex = startIndex + pageSize;
-        List<SearchItem> searchItems = cacheItems.subList(startIndex, endIndex)
+        List<SearchItem> searchItems = cacheItems.subList(startIndex, Math.min(endIndex, cacheItems.size()))
                 .stream()
                 .map(item -> new SearchItem(item.getId(), item.getTitle(), item.getUrl()))
                 .collect(Collectors.toList());
