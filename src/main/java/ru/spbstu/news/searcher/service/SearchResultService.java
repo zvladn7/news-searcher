@@ -35,7 +35,7 @@ public class SearchResultService {
 
     public static final int DEFAULT_PAGE_SIZE = 5;
     public static final int DEFAULT_IMAGE_PAGE_SIZE = 20;
-    public static final int DEFAULT_TITLE_LENGTH = 100;
+    public static final int DEFAULT_TITLE_LENGTH = 10;
     public static final int SIMILAR_ITEMS_COUNT = 8;
 
     private final SearchResultRepository searchResultRepository;
@@ -97,7 +97,7 @@ public class SearchResultService {
         if (resultsFromIndex != null) {
             List<SearchItem> searchItems = resultsFromIndex.getSearchItems();
             int startIndex = (page - 1) * (pageSize);
-            int endIndex = startIndex + page;
+            int endIndex = startIndex + pageSize;
             return new FindByTextResult(
                     searchItems.subList(startIndex, endIndex),
                     resultsFromIndex.getTotalCount());
