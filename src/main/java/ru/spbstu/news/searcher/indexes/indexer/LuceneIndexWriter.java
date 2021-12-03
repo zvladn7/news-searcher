@@ -76,6 +76,12 @@ public class LuceneIndexWriter implements IndexerComponent {
             indexWriter.addDocument(document);
         } catch (IOException e) {
             logger.warn("Cannot add document to index", e);
+        } finally {
+            try {
+                indexWriter.commit();
+            } catch (IOException e) {
+                logger.warn("Cannot commit when index", e);
+            }
         }
     }
 
