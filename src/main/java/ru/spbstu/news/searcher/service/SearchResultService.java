@@ -99,7 +99,7 @@ public class SearchResultService {
             int startIndex = (page - 1) * (pageSize);
             int endIndex = startIndex + pageSize;
             return new FindByTextResult(
-                    searchItems.subList(startIndex, endIndex),
+                    searchItems.subList(startIndex, Math.min(endIndex, searchItems.size())),
                     resultsFromIndex.getTotalCount());
         }
         throw new ResultNotFoundException("No results for query: " + textQuery);
