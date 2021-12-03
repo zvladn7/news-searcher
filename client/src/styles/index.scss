@@ -9,11 +9,12 @@
 @import '../pages/ui-kit';
 @import '../pages/welcome';
 @import '../pages/search';
-@import '../pages/notFound';
+@import '../pages/notFoundPage';
 
 // components
 @import '../components/inputSearch';
 @import '../components/header';
+@import '../components/notFound';
 
 // ui-components
 @import '../components/ui/input';
@@ -25,3 +26,4 @@
 @import '../components/ui/imageBlock';
 @import '../components/ui/tabs';
 @import '../components/ui/loader';
+@import '../components/ui/searchCount';

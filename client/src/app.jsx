@@ -5,7 +5,7 @@ import './styles/index.scss';
 import UiKit from './pages/ui-kit';
 import Welcome from './pages/welcome';
 import Search from './pages/search';
-import NotFound from './pages/notFound';
+import NotFoundPage from './pages/notFoundPage';
 import { SEARCH_PAGE_PATH, UI_KIT_PAGE_PATH, WELCOME_PAGE_PATH } from './constants/url';
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         <Route path={UI_KIT_PAGE_PATH} element={<UiKit />} />
         <Route path={WELCOME_PAGE_PATH} element={<Welcome />} />
         <Route path={SEARCH_PAGE_PATH} element={<Search />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
