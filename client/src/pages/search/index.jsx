@@ -28,6 +28,7 @@ import ArrowRight from '../../assets/svg/arrowRight';
 import { resultsImage } from '../../mocks/resultsImage';
 import ImageBlock from '../../components/ui/imageBlock';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const Search = () => {
   const [queryParams, navigateWithQueryParams] = useQueryParams();
@@ -107,89 +108,98 @@ const Search = () => {
           onChangeTab={handleOnChangeTab}
         />
       </div>
-      <div className="search__content-wrapper" id="search__content-wrapper">
+      <div className="search__content-wrapper">
         {tab === 0 && (
-          <div className="search__content">
-            {!!result && result.length > 0 ?
-              resultLoading ? (
-                <Loader text={loaderText[language]} />
-              ) : (
-                <>
-                  <div
-                    className="search__content-count search__content-item"
-                  >
-                    {`${aboutResultsTextFirstPart[language]} ${resultCount.toLocaleString()} ${aboutResultsTextSecondPart[language]}`}
-                  </div>
-                  <div className="search__content-item">
-                    <BlockResultSearch
-                      title={result[0].title}
-                      link={result[0].link}
-                    />
-                  </div>
-                  {similarQuery && page === 0 && (
+          <Scrollbars
+            autoHide
+          >
+            <div className="search__content">
+              {!!result && result.length > 0 ?
+                resultLoading ? (
+                  <Loader text={loaderText[language]} />
+                ) : (
+                  <>
+                    <div
+                      className="search__content-count search__content-item"
+                    >
+                      {`${aboutResultsTextFirstPart[language]} ${resultCount.toLocaleString()} ${aboutResultsTextSecondPart[language]}`}
+                    </div>
                     <div className="search__content-item">
-                      <SimilarQueries
-                        title={similarResultsText[language]}
-                        queries={similarQuery}
-                        onClickItem={handleOnSearch}
-                        viewType={viewType}
-                      />
-                    </div>
-                  )}
-                  {result.slice(1).map((item) => (
-                    <div className="search__content-item" key={`search__content-item-${item.id}`}>
                       <BlockResultSearch
-                        title={item.title}
-                        link={item.link}
+                        title={result[0].title}
+                        link={result[0].link}
                       />
                     </div>
-                  ))}
-                  <ReactPaginate
-                    pageCount={Math.ceil(resultCount / result.length)}
-                    pageRangeDisplayed={7}
-                    marginPagesDisplayed={0}
-                    previousLabel={<ArrowLeft />}
-                    nextLabel={<ArrowRight />}
-                    breakLabel=""
-                    onPageChange={handleOnPageChange}
-                    initialPage={page}
-                    className="search__content-paginate"
-                    pageClassName="search__content-paginate-li"
-                    activeClassName="search__content-paginate-li search__content-paginate-li--selected"
-                    previousClassName="search__content-paginate-button"
-                    nextClassName="search__content-paginate-button"
-                  />
-                </>
+                    {similarQuery && page === 0 && (
+                      <div className="search__content-item">
+                        <SimilarQueries
+                          title={similarResultsText[language]}
+                          queries={similarQuery}
+                          onClickItem={handleOnSearch}
+                          viewType={viewType}
+                        />
+                      </div>
+                    )}
+                    {result.slice(1).map((item) => (
+                      <div className="search__content-item" key={`search__content-item-${item.id}`}>
+                        <BlockResultSearch
+                          title={item.title}
+                          link={item.link}
+                        />
+                      </div>
+                    ))}
+                    <ReactPaginate
+                      pageCount={Math.ceil(resultCount / result.length)}
+                      pageRangeDisplayed={7}
+                      marginPagesDisplayed={0}
+                      previousLabel={<ArrowLeft />}
+                      nextLabel={<ArrowRight />}
+                      breakLabel=""
+                      onPageChange={handleOnPageChange}
+                      initialPage={page}
+                      className="search__content-paginate"
+                      pageClassName="search__content-paginate-li"
+                      activeClassName="search__content-paginate-li search__content-paginate-li--selected"
+                      previousClassName="search__content-paginate-button"
+                      nextClassName="search__content-paginate-button"
+                    />
+                  </>
+                ) : (
+                  <div className="search__content-not-found" />
+                )}
+            </div>
+          </Scrollbars>
+        )}
+        {tab === 1 && (
+          <Scrollbars
+            autoHide
+            renderView={(props) => <div {...props} id="search__content-scrollbar" />}
+          >
+            <div className="search__content">
+              {!!resultImage && resultImage.length > 0 ? (
+                <InfiniteScroll
+                  hasMore={true}
+                  next={handleOnNextImagePage}
+                  loader={
+                    <div className="search__content-images-loader">
+                      <Loader text={loaderText[language]} />
+                    </div>
+                  }
+                  dataLength={resultImage.length}
+                  className="search__content-images"
+                  scrollableTarget="search__content-scrollbar"
+                >
+                  {resultImage.map((image) =>
+                    <div className="search__content-images-item" key={`search__content-images-item-${image.id}`}>
+                      <ImageBlock title={image.title} link={image.link} imageUrl={image.images} />
+                    </div>,
+                  )}
+                </InfiniteScroll>
               ) : (
                 <div className="search__content-not-found" />
               )}
-          </div>
-        )}
-        {tab === 1 && (
-          <div className="search__content">
-            {!!resultImage && resultImage.length > 0 ? (
-              <InfiniteScroll
-                hasMore={true}
-                next={handleOnNextImagePage}
-                loader={
-                  <div className="search__content-images-loader">
-                    <Loader text={loaderText[language]} />
-                  </div>
-                }
-                dataLength={resultImage.length}
-                className="search__content-images"
-                scrollableTarget="search__content-wrapper"
-              >
-                {resultImage.map((image) =>
-                  <div className="search__content-images-item" key={`search__content-images-item-${image.id}`}>
-                    <ImageBlock title={image.title} link={image.link} imageUrl={image.images} />
-                  </div>,
-                )}
-              </InfiniteScroll>
-            ) : (
-              <div className="search__content-not-found" />
-            )}
-          </div>
+            </div>
+          </Scrollbars>
         )}
       </div>
     </div>
