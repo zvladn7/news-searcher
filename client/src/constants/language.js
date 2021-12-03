@@ -1,3 +1,5 @@
+import { MAX_AMOUNT_OF_WORDS } from '../utils/queryRules';
+
 export const RUSSIAN_LANGUAGE = 'RU';
 export const ENGLISH_LANGUAGE = 'EN';
 
@@ -92,16 +94,11 @@ export const searchQueryRulesTitle = {
 };
 
 export const rule1 = {
-  RU: 'Максимальное количество слов - 16',
-  EN: 'Maximum number of words - 16',
+  RU: `Максимальное количество слов - ${MAX_AMOUNT_OF_WORDS}`,
+  EN: `Maximum number of words - ${MAX_AMOUNT_OF_WORDS}`,
 };
 
 export const rule2 = {
   RU: 'Содержит английские или русские символы, числа или знаки препинания',
   EN: 'Contains English or Russian characters, numbers or punctuation marks',
-};
-
-export const rule3 = {
-  RU: 'Максимальное количество слов - 16',
-  EN: 'Maximum number of words - 16',
 };

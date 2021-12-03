@@ -105,11 +105,19 @@
     &__content {
       padding-left: 40px;
     }
+
+    &__content-images-loader {
+      width: calc(100% - 64px);
+    }
   }
 
   @include media-breakpoint-up(xl) {
     &__content {
       padding-left: 145px;
+    }
+
+    &__content-images-loader {
+      width: calc(100% - 129px);
     }
   }
 }
