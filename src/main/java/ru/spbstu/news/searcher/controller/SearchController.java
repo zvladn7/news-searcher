@@ -19,12 +19,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/search")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SearchController {
 
     @Autowired
     private SearchResultService searchResultService;
 
-    @GetMapping("/{page}")
+    @PostMapping("/{page}")
     public ResponseEntity<FindByTextResult> findByText(@PathVariable(name = "page") Integer page,
                                                        @RequestBody String query) {
         Validate.notNull(page);
@@ -37,7 +38,7 @@ public class SearchController {
         }
     }
 
-    @GetMapping("/similar")
+    @PostMapping("/similar")
     public ResponseEntity<List<SimilarItem>> findSimilar(@NotNull @RequestBody String query) {
         Validate.notNull(query);
         try {
@@ -48,7 +49,7 @@ public class SearchController {
         }
     }
 
-    @GetMapping("/image")
+    @PostMapping("/image")
     public ResponseEntity<FindImageResult> findImages(@RequestBody FindImagesRequest imagesRequest) {
         Validate.notNull(imagesRequest);
         Validate.notNull(imagesRequest.getQuery());
