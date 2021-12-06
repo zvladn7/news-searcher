@@ -1,6 +1,6 @@
 import { rule1, rule2 } from '../constants/language';
 
-const localeRegex = /^[-_=*+а-яА-ЯёЁa-zA-Z0-9!?,.;:()№%'"\s]+$/g;
+const localeRegex = /^[-_=*+а-яА-ЯёЁa-zA-Z0-9!?,.;:()№%'"\s]+$/;
 export const MAX_AMOUNT_OF_WORDS = 16;
 
 export const getBreaksRules = (query) => {

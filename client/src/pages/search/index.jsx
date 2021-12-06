@@ -39,11 +39,13 @@ const Search = () => {
   const {viewType} = windowSize;
   const [queriesHistory, addQueryIntoHistory, deleteQueryFromHistory] = useQueriesStorage();
 
-  const [inputSearchValue, setInputSearchValue] = useState(queryParams.get(SEARCH_VALUE_QUERY_PARAMETER).trim() || '');
+  const [initSearchQuery, setInitSearchQuery] = useState(queryParams.get(SEARCH_VALUE_QUERY_PARAMETER).trim() || '');
+  const [inputSearchValue, setInputSearchValue] = useState(initSearchQuery);
   const [language, changeLanguage] = useLanguage();
   const [tab, setTab] = useState(Number(queryParams.get(TAB_QUERY_PARAMETER)) || 0);
   const [page, setPage] = useState(Number(queryParams.get(PAGE_QUERY_PARAMETER)) || 0);
   const [breaksRules, setBreaksRules] = useState([]);
+  const [breaksRulesQuery, setBreaksRulesQuery] = useState('');
 
   const [
     resultText,
@@ -68,8 +70,6 @@ const Search = () => {
     resultImageSendRequest
   ] = useSearchQueryResultImage(inputSearchValue);
 
-  // getBreaksRules(inputSearchValue);
-
   const handleOnChangeInputSearchValue = (value) => setInputSearchValue(value);
 
   const handleOnSearch = useCallback((query) => {
@@ -77,12 +77,15 @@ const Search = () => {
     addQueryIntoHistory(currentQuery);
     setInputSearchValue(currentQuery);
 
-    // const newBreaksRules = getBreaksRules(query); //TODO: исправить правила запроса
-    const newBreaksRules = [];
+    const newBreaksRules = getBreaksRules(query);
     if (newBreaksRules.length > 0) {
       setBreaksRules(newBreaksRules);
+      setBreaksRulesQuery(query);
     } else {
+      setBreaksRules([]);
+      setBreaksRulesQuery('');
       setPage(0);
+      setInitSearchQuery(query);
       navigateWithQueryParams(SEARCH_PAGE_PATH, {
         [SEARCH_VALUE_QUERY_PARAMETER]: currentQuery,
         [TAB_QUERY_PARAMETER]: tab,
@@ -97,24 +100,24 @@ const Search = () => {
   const handleOnChangeTab = useCallback((tabId) => {
     setTab(tabId);
     navigateWithQueryParams(SEARCH_PAGE_PATH, {
-      [SEARCH_VALUE_QUERY_PARAMETER]: inputSearchValue.trim(),
+      [SEARCH_VALUE_QUERY_PARAMETER]: initSearchQuery,
       [TAB_QUERY_PARAMETER]: tabId,
       [PAGE_QUERY_PARAMETER]: page,
     }, true);
-  }, [inputSearchValue, page]);
+  }, [inputSearchValue, page, initSearchQuery]);
 
   const handleOnPageChange = useCallback(({selected}) => {
     setPage(selected);
     navigateWithQueryParams(SEARCH_PAGE_PATH, {
-      [SEARCH_VALUE_QUERY_PARAMETER]: inputSearchValue.trim(),
+      [SEARCH_VALUE_QUERY_PARAMETER]: initSearchQuery,
       [TAB_QUERY_PARAMETER]: tab,
       [PAGE_QUERY_PARAMETER]: selected,
     }, true);
 
     if (selected !== page) {
-      resultTextSendRequest(selected, inputSearchValue.trim());
+      resultTextSendRequest(selected, initSearchQuery);
     }
-  }, [inputSearchValue, tab, page]);
+  }, [inputSearchValue, tab, page, initSearchQuery]);
 
   return (
     <div className="search">
@@ -141,7 +144,7 @@ const Search = () => {
                 <div className="search__content-item">
                   <BreakRules
                     breakRules={breaksRules}
-                    searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''}
+                    searchQuery={breaksRulesQuery}
                     language={language}
                   />
                 </div>
@@ -203,7 +206,7 @@ const Search = () => {
                       </div>
                       <div className="search__content-item">
                         <NotFound
-                          language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''}
+                          language={language} searchQuery={initSearchQuery}
                         />
                       </div>
                     </>
@@ -222,7 +225,7 @@ const Search = () => {
                 <div className="search__content-item">
                   <BreakRules
                     breakRules={breaksRules}
-                    searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''}
+                    searchQuery={breaksRulesQuery}
                     language={language}
                   />
                 </div>
@@ -248,7 +251,7 @@ const Search = () => {
                   </InfiniteScroll>
                 ) : (
                   <div className="search__content-item">
-                    <NotFound language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''} />
+                    <NotFound language={language} searchQuery={initSearchQuery} />
                   </div>
                 )
               )}
