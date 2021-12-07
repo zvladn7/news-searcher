@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Service
 public class SearchResultService {
 
-    public static final int DEFAULT_PAGE_SIZE = 5;
+    public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_IMAGE_PAGE_SIZE = 20;
     public static final int DEFAULT_TITLE_LENGTH = 10;
     public static final int SIMILAR_ITEMS_COUNT = 8;
@@ -48,7 +48,7 @@ public class SearchResultService {
     @Autowired
     public SearchResultService(@NotNull final SearchResultRepository searchResultRepository,
                                @NotNull final IndexSearcherComponent indexSearcherComponent,
-                               @NotNull IndexWriterComponent indexWriterComponent,
+                               @NotNull final IndexWriterComponent indexWriterComponent,
                                @NotNull final Cache cache,
                                @NotNull final ImageSearchResultsProcessor imageSearchResultsProcessor,
                                @NotNull final TextSearchResultsProcessor textSearchResultsProcessor) {
