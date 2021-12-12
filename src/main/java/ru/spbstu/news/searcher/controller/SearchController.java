@@ -11,7 +11,6 @@ import ru.spbstu.news.searcher.controller.request.FindImagesRequest;
 import ru.spbstu.news.searcher.controller.request.ItemToIndex;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
-import ru.spbstu.news.searcher.controller.result.SimilarItem;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 import ru.spbstu.news.searcher.service.SearchResultService;
 
@@ -39,10 +38,10 @@ public class SearchController {
     }
 
     @PostMapping("/similar")
-    public ResponseEntity<List<SimilarItem>> findSimilar(@NotNull @RequestBody String query) {
+    public ResponseEntity<List<String>> findSimilar(@NotNull @RequestBody String query) {
         Validate.notNull(query);
         try {
-            List<SimilarItem> similarItems = searchResultService.findSimilar(query);
+            List<String> similarItems = searchResultService.findSimilar(query);
             return ResponseEntity.ok(similarItems);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

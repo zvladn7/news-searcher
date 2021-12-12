@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public interface IndexerComponent {
 
-    void open(@NotNull String indexDir) throws LuceneIndexingException;
+    void open(@NotNull String indexDir) throws LuceneIndexingException, IOException;
 
     void index(@NotNull SearchIndexDocument searchIndexDocument) throws LuceneOpenException;
 

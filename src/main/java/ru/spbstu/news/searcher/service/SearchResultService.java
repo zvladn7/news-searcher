@@ -2,6 +2,7 @@ package ru.spbstu.news.searcher.service;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,6 @@ import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.ImageItem;
 import ru.spbstu.news.searcher.controller.result.SearchItem;
-import ru.spbstu.news.searcher.controller.result.SimilarItem;
 import ru.spbstu.news.searcher.database.SearchResult;
 import ru.spbstu.news.searcher.database.SearchResultRepository;
 import ru.spbstu.news.searcher.exception.ResultNotFoundException;
@@ -134,11 +134,11 @@ public class SearchResultService {
         return new FindByTextResult(searchItems, cacheTotalCount);
     }
 
-    public List<SimilarItem> findSimilar(String query) throws ResultNotFoundException {
+    public List<String> findSimilar(String query) throws ResultNotFoundException {
         FindByTextResult textResult = findByText(query, 1, SIMILAR_ITEMS_COUNT);
         List<SearchItem> searchItems = textResult.getSearchItems();
         return searchItems.stream()
-                .map(item -> new SimilarItem(item.getTitle(), item.getLink()))
+                .map(SearchItem::getTitle)
                 .collect(Collectors.toList());
     }
 
@@ -177,15 +177,17 @@ public class SearchResultService {
         for (SearchCacheItem cacheItem : cacheItems) {
             List<String> imageUrls = cacheItem.getImageUrls();
             for (String imageUrl : imageUrls) {
-                imageItems.add(new ImageItem(
-                        cacheItem.getId(),
-                        imageUrl,
-                        cacheItem.getTitle(),
-                        cacheItem.getUrl()
-                ));
+                if (StringUtils.isNotBlank(imageUrl)) {
+                    imageItems.add(new ImageItem(
+                            cacheItem.getId(),
+                            imageUrl,
+                            cacheItem.getTitle(),
+                            cacheItem.getUrl()
+                    ));
+                }
             }
         }
-        return new FindImageResult(imageItems, cacheTotalCount);
+        return new FindImageResult(imageItems, imageItems.size());
     }
 
     public void index(@NotNull ItemToIndex itemToIndex) throws LuceneOpenException {

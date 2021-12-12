@@ -9,6 +9,7 @@ import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneIndexIllegalPartitions;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneIndexingException;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
+import ru.spbstu.news.searcher.indexes.indexer.CacheInvalidator;
 import ru.spbstu.news.searcher.indexes.indexer.IndexerComponent;
 import ru.spbstu.news.searcher.indexes.indexer.LoggingIndexerComponent;
 import ru.spbstu.news.searcher.indexes.indexer.LuceneIndexWriter;
@@ -24,10 +25,14 @@ public class IndexWriterComponent implements IndexerComponent {
     private final String indexDir;
     private final int partitions;
     private final IndexerComponent[] luceneIndexWriters;
+    private final CacheInvalidator cacheInvalidator;
+    private Runnable onIndexUpdateListener;
 
     public IndexWriterComponent(@Value("${indexer.partions.amount}") int partitions,
                                 @Value("${indexer.trace.actions}") boolean loggingEnabled,
-                                @Value("${indexer.indexDir}") String indexDir) throws LuceneIndexIllegalPartitions {
+                                @Value("${indexer.indexDir}") String indexDir,
+                                @NotNull CacheInvalidator cacheInvalidator) throws LuceneIndexIllegalPartitions {
+        this.cacheInvalidator = cacheInvalidator;
         if (partitions <= 0) {
             throw new LuceneIndexIllegalPartitions("Number of partitions is less than 0");
         }
@@ -43,15 +48,20 @@ public class IndexWriterComponent implements IndexerComponent {
         return partition - 1;
     }
 
+    public void setOnIndexUpdateListener(Runnable onIndexUpdateListener) {
+        this.onIndexUpdateListener = onIndexUpdateListener;
+    }
+
     @PostConstruct
-    public void init() throws LuceneIndexingException {
+    public void init() throws LuceneIndexingException, IOException {
         open(indexDir);
     }
 
     @Override
-    public void open(@NotNull String indexDir) throws LuceneIndexingException {
+    public void open(@NotNull String indexDir) throws LuceneIndexingException, IOException {
         for (IndexerComponent luceneIndexWriter : luceneIndexWriters) {
             luceneIndexWriter.open(indexDir);
+            luceneIndexWriter.commit();
         }
     }
 
@@ -60,6 +70,8 @@ public class IndexWriterComponent implements IndexerComponent {
         int partition = IndexPartitioner.getPartition(searchIndexDocument, partitions);
         IndexerComponent luceneIndexWriter = luceneIndexWriters[toIndex(partition)];
         luceneIndexWriter.index(searchIndexDocument);
+        cacheInvalidator.invalidate(searchIndexDocument);
+        onIndexUpdateListener.run();
     }
 
     @Override

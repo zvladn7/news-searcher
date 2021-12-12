@@ -36,9 +36,11 @@ public class IndexSearcherComponent implements Searcher {
 
     private final String indexDir;
     private final LuceneIndexSearcher[] luceneIndexSearchers;
+    private final IndexWriterComponent indexWriterComponent;
 
     public IndexSearcherComponent(@Value("${indexer.partions.amount}") int partitions,
-                                  @Value("${indexer.indexDir}") String indexDir) throws LuceneIndexIllegalPartitions {
+                                  @Value("${indexer.indexDir}") String indexDir,
+                                  @NotNull IndexWriterComponent indexWriterComponent) throws LuceneIndexIllegalPartitions {
         if (partitions <= 0) {
             throw new LuceneIndexIllegalPartitions("Number of partitions is less than 0");
         }
@@ -47,6 +49,15 @@ public class IndexSearcherComponent implements Searcher {
         for (int partition = 1; partition <= partitions; ++partitions) {
             luceneIndexSearchers[toIndex(partition)] = new LuceneIndexSearcher(String.valueOf(partition), partition);
         }
+        this.indexWriterComponent = indexWriterComponent;
+        this.indexWriterComponent.setOnIndexUpdateListener(() -> {
+            try {
+                close();
+                init();
+            } catch (LuceneIndexingException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static int toIndex(int partition) {
@@ -86,7 +97,7 @@ public class IndexSearcherComponent implements Searcher {
                                                                       @NotNull Integer docsCount) {
         Query query;
         try {
-            query = SearchIndexDocumentConverter.createQuery(textQuery);
+            query = SearchIndexDocumentConverter.createQueryFullText(textQuery);
         } catch (ParseException e) {
             logger.warn("Cannot parse query", e);
             return Pair.create(Collections.emptyList(), 0L);
