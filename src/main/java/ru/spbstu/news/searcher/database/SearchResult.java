@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Table(name = "searching")
 public class SearchResult {
 
     public SearchResult(final String url, final List<String> imageUrls) {
@@ -32,7 +34,7 @@ public class SearchResult {
     @GeneratedValue
     private Long id;
 
-    @Column
+    @Column(columnDefinition="TEXT")
     private String url;
 
     @ElementCollection(fetch = FetchType.EAGER)

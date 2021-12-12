@@ -13,6 +13,7 @@ import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.SimilarItem;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
+import ru.spbstu.news.searcher.scanner.NewsCrawlerController;
 import ru.spbstu.news.searcher.service.SearchResultService;
 
 import java.util.List;
@@ -23,6 +24,9 @@ public class SearchController {
 
     @Autowired
     private SearchResultService searchResultService;
+
+    @Autowired
+    private NewsCrawlerController newsCrawlerController;
 
     @GetMapping("/{page}")
     public ResponseEntity<FindByTextResult> findByText(@PathVariable(name = "page") Integer page,
@@ -67,6 +71,16 @@ public class SearchController {
             searchResultService.index(itemToIndex);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (LuceneOpenException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/crawl")
+    public ResponseEntity<?> crawl() {
+        try {
+            newsCrawlerController.launchCrawling();
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
