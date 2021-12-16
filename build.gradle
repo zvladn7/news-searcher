@@ -44,6 +44,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// https://mvnrepository.com/artifact/edu.uci.ics/crawler4j
+	implementation 'edu.uci.ics:crawler4j:4.2'
+
 }
 
 test {

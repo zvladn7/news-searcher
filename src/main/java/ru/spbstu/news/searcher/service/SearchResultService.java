@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.spbstu.news.searcher.cache.Cache;
@@ -33,9 +35,11 @@ import java.util.stream.Collectors;
 @Service
 public class SearchResultService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SearchResultService.class);
+
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_IMAGE_PAGE_SIZE = 20;
-    public static final int DEFAULT_TITLE_LENGTH = 10;
+    public static final int MAX_FULL_TEXT_LENGTH = 32766;
     public static final int SIMILAR_ITEMS_COUNT = 8;
 
     private final SearchResultRepository searchResultRepository;
@@ -84,15 +88,15 @@ public class SearchResultService {
                                        @Nullable Integer pageSize) throws ResultNotFoundException {
         pageSize = pageSize != null ? pageSize : DEFAULT_PAGE_SIZE;
         int searchMaxThreshold = page * pageSize;
-        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(textQuery);
-        if (cacheItemsPair != null) {
-            Long cacheTotalCount = cacheItemsPair.getKey();
-            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
-            int size = cacheItems.size();
-            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - pageSize <= size) {
-                return extractFromCache(cacheItems, page, pageSize, cacheTotalCount);
-            }
-        }
+//        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(textQuery);
+//        if (cacheItemsPair != null) {
+//            Long cacheTotalCount = cacheItemsPair.getKey();
+//            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
+//            int size = cacheItems.size();
+//            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - pageSize <= size) {
+//                return extractFromCache(cacheItems, page, pageSize, cacheTotalCount);
+//            }
+//        }
         FindByTextResult resultsFromIndex = getResults(textQuery, searchMaxThreshold, textSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<SearchItem> searchItems = resultsFromIndex.getSearchItems();
@@ -144,15 +148,15 @@ public class SearchResultService {
 
     public FindImageResult findImages(int page, String query) throws ResultNotFoundException {
         int searchMaxThreshold = page * DEFAULT_IMAGE_PAGE_SIZE;
-        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
-        if (cacheItemsPair != null) {
-            Long cacheTotalCount = cacheItemsPair.getKey();
-            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
-            int size = cacheItems.size();
-            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - DEFAULT_IMAGE_PAGE_SIZE <= size) {
-                return extractImagesResultFromCache(cacheItems, page, DEFAULT_IMAGE_PAGE_SIZE, cacheTotalCount);
-            }
-        }
+//        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
+//        if (cacheItemsPair != null) {
+//            Long cacheTotalCount = cacheItemsPair.getKey();
+//            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
+//            int size = cacheItems.size();
+//            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - DEFAULT_IMAGE_PAGE_SIZE <= size) {
+//                return extractImagesResultFromCache(cacheItems, page, DEFAULT_IMAGE_PAGE_SIZE, cacheTotalCount);
+//            }
+//        }
         FindImageResult resultsFromIndex = getResults(query, searchMaxThreshold, imageSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<ImageItem> searchItems = resultsFromIndex.getImageItems();
@@ -191,6 +195,10 @@ public class SearchResultService {
     }
 
     public void index(@NotNull ItemToIndex itemToIndex) throws LuceneOpenException {
+        if (itemToIndex.getText() == null || itemToIndex.getText().length() > MAX_FULL_TEXT_LENGTH) {
+            logger.warn("Text is too long too index it, item to index: [{}]", itemToIndex);
+            return;
+        }
         SearchResult searchResult = new SearchResult(itemToIndex.getUrl(), itemToIndex.getImageUrls());
         SearchResult save = searchResultRepository.save(searchResult);
         SearchIndexDocument searchIndexDocument = new SearchIndexDocument(save.getId(), itemToIndex.getText());

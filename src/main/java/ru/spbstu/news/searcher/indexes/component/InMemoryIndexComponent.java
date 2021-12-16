@@ -11,9 +11,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,6 +23,8 @@ import ru.spbstu.news.searcher.indexes.SearchIndexDocumentConverter;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class InMemoryIndexComponent {
@@ -31,25 +33,36 @@ public class InMemoryIndexComponent {
 
     private static final int DEFAULT_TOP_DOCS_COUNT = 1;
 
-    private final Directory memoryIndex;
     private final Analyzer analyzer ;
+    private final InMemoryIndexDirectoryRepository inMemoryIndexDirectoryRepository;
 
-    public InMemoryIndexComponent() {
-        this.memoryIndex = new RAMDirectory();
+    public InMemoryIndexComponent(InMemoryIndexDirectoryRepository inMemoryIndexDirectoryRepository) {
         this.analyzer = AnalyzerProvider.provide();
+        this.inMemoryIndexDirectoryRepository = inMemoryIndexDirectoryRepository;
     }
 
-    public void index(@NotNull SearchIndexDocument searchIndexDocument) throws LuceneOpenException {
-        try (IndexWriter writer = new IndexWriter(memoryIndex, new IndexWriterConfig(analyzer))) {
-            Document document = SearchIndexDocumentConverter.convertInMemory(searchIndexDocument);
-            writer.addDocument(document);
-        } catch (IOException e) {
-            logger.warn("Cannot index document [{}] in memory index", searchIndexDocument, e);
+    @Nullable
+    public RAMDirectory index(List<SearchIndexDocument> documentsToStoreInMemoryIndex) {
+        RAMDirectory directory = inMemoryIndexDirectoryRepository.provideRAMDirectory();
+        if (directory == null) {
+            logger.warn("RAM directory is null");
+            return null;
         }
+        try (IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(analyzer))) {
+            for (SearchIndexDocument searchIndexDocument : documentsToStoreInMemoryIndex) {
+                Document document = SearchIndexDocumentConverter.convertInMemory(searchIndexDocument);
+                writer.addDocument(document);
+            }
+        } catch (IOException e) {
+            logger.warn("Cannot index documents [{}] in memory index",
+                    Arrays.toString(documentsToStoreInMemoryIndex.toArray()), e);
+        }
+        return directory;
     }
 
-    public Document searchIndex(Query query) {
-        try (IndexReader reader = DirectoryReader.open(memoryIndex)) {
+    public Document searchIndex(@NotNull Query query,
+                                @NotNull RAMDirectory directory) {
+        try (IndexReader reader = DirectoryReader.open(directory)) {
             IndexSearcher searcher = new IndexSearcher(reader);
             TopDocs topDocs = searcher.search(query, DEFAULT_TOP_DOCS_COUNT); // TODO: probably we can create different method to search more or less docs
             for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
@@ -61,12 +74,15 @@ public class InMemoryIndexComponent {
         return null;
     }
 
-    public void deleteByDatabaseId(@NotNull Long databaseId) {
+    public void deleteByDatabaseId(@NotNull Long databaseId,
+                                   @NotNull RAMDirectory directory) {
         Term term = SearchIndexDocumentConverter.createDatabaseIdTerm(databaseId);
-        try (IndexWriter writer = new IndexWriter(memoryIndex, new IndexWriterConfig(analyzer))) {
+        try (IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(analyzer))) {
             writer.deleteDocuments(term);
         } catch (IOException e) {
             logger.warn("Cannot delete documents with database id [{}] in memory index", databaseId, e);
+        } finally {
+            inMemoryIndexDirectoryRepository.releaseRAMDirectory(directory);
         }
     }
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.store.RAMDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +42,14 @@ public class TitleExtractor {
         Validate.notNull(query);
         try {
             Iterable<String> chunks = getChunks(fullText);
+            List<SearchIndexDocument> documentsToStoreInMemoryIndex = new ArrayList<>();
             for (String chunk : chunks) {
                 String fullChunk = databaseId + ": " + chunk;
-                inMemoryIndexComponent.index(new SearchIndexDocument(databaseId, fullChunk));
+                documentsToStoreInMemoryIndex.add(new SearchIndexDocument(databaseId, fullChunk));
             }
+            RAMDirectory directory = inMemoryIndexComponent.index(documentsToStoreInMemoryIndex);
             Document document =
-                    inMemoryIndexComponent.searchIndex(SearchIndexDocumentConverter.createQueryFullText(query));
+                    inMemoryIndexComponent.searchIndex(SearchIndexDocumentConverter.createQueryFullText(query), directory);
             if (document == null) {
                 logger.warn("Document is null after search for title from text for \n" +
                         "fullText: [{}],\n" +
@@ -55,16 +58,11 @@ public class TitleExtractor {
                 return defaultResult(fullText);
             }
             SearchIndexDocument searchIndexDocument = SearchIndexDocumentConverter.convertFromMemory(document);
-            inMemoryIndexComponent.deleteByDatabaseId(databaseId);
+            inMemoryIndexComponent.deleteByDatabaseId(databaseId, directory);
             String title = searchIndexDocument.getFullText();
             return title.substring(title.indexOf(":") + 1);
         } catch (ParseException e) {
             logger.warn("Cannot parse string query to lucene query \n" +
-                    "fullText: [{}],\n" +
-                    "database: [{}],\n" +
-                    "query: [{}]", fullText, databaseId, query, e);
-        } catch (LuceneOpenException e) {
-            logger.warn("Cannot search in index, parameters:\n" +
                     "fullText: [{}],\n" +
                     "database: [{}],\n" +
                     "query: [{}]", fullText, databaseId, query, e);
