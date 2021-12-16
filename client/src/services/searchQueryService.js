@@ -11,7 +11,9 @@ export const useSearchQueryResultText = (page = 0, initQuery = '') => {
       url: `/search/${page + 1}`,
       method: 'post',
       headers: JSON.stringify({}),
-      body: JSON.stringify(initQuery),
+      body: JSON.stringify({
+        query: initQuery,
+      }),
     });
   }, []);
 
@@ -25,7 +27,9 @@ export const useSearchQueryResultText = (page = 0, initQuery = '') => {
       url: `/search/${page + 1}`,
       method: 'post',
       headers: JSON.stringify({}),
-      body: JSON.stringify(query),
+      body: JSON.stringify({
+        query: query,
+      }),
     });
   };
 

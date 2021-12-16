@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
 
+const initPage = 1;
+
 export const useSearchQueryResultImage = (initQuery = '') => {
   const {response, isLoading: resultImageLoading, error: resultImageError, sendRequest} = useApi();
   const [resultImage, setResultImage] = useState([]);
   const [resultImageCount, setResultImageCount] = useState(0);
-  const [resultImagePage, setResultImagePage] = useState(1);
+  const [resultImagePage, setResultImagePage] = useState(initPage);
 
   useEffect(() => {
     sendRequest({
@@ -26,8 +28,12 @@ export const useSearchQueryResultImage = (initQuery = '') => {
     setResultImageCount(response?.totalCount || 0);
   }, [response]);
 
-  const resultImageSendRequest = useCallback((query) => {
-    const newPage = resultImagePage + 1;
+  const resultImageSendRequest = useCallback((query, isNewSearch = false) => {
+    if (isNewSearch) {
+      setResultImage([]);
+      setResultImageCount(0);
+    }
+    const newPage = isNewSearch ? initPage : resultImagePage + 1;
     setResultImagePage(newPage);
     sendRequest({
       url: '/search/image',

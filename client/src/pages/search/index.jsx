@@ -67,7 +67,7 @@ const Search = () => {
     resultImageCount,
     resultImageLoading,
     resultImageError,
-    resultImageSendRequest
+    resultImageSendRequest,
   ] = useSearchQueryResultImage(inputSearchValue);
 
   const handleOnChangeInputSearchValue = (value) => setInputSearchValue(value);
@@ -93,7 +93,7 @@ const Search = () => {
       }, true);
       resultTextSendRequest(0, currentQuery);
       similarQuerySendRequest(currentQuery);
-      resultImageSendRequest(currentQuery);
+      resultImageSendRequest(currentQuery, true);
     }
   }, [addQueryIntoHistory, tab]);
 
@@ -230,29 +230,36 @@ const Search = () => {
                   />
                 </div>
               ) : (
-                !!resultImage && resultImage.length > 0 ? (
-                  <InfiniteScroll
-                    hasMore={true}
-                    next={() => resultImageSendRequest(inputSearchValue)}
-                    loader={
-                      <div className="search__content-images-loader">
-                        <Loader text={loaderText[language]} />
-                      </div>
-                    }
-                    dataLength={resultImage.length}
-                    className="search__content-images"
-                    scrollableTarget="search__content-scrollbar"
-                  >
-                    {resultImage.map((image) =>
-                      <div className="search__content-images-item" key={`search__content-images-item-${image.id}`}>
-                        <ImageBlock title={image.title} link={image.link} imageUrl={image.imageUrl} />
-                      </div>,
-                    )}
-                  </InfiniteScroll>
+                resultImageLoading && resultImage.length === 0 ? (
+                  <Loader text={loaderText[language]} />
                 ) : (
-                  <div className="search__content-item">
-                    <NotFound language={language} searchQuery={initSearchQuery} />
-                  </div>
+                  !!resultImage && resultImage.length > 0 ? (
+                    <InfiniteScroll
+                      hasMore={!resultImageError}
+                      next={() => resultImageSendRequest(inputSearchValue)}
+                      loader={
+                        <div className="search__content-images-loader">
+                          <Loader text={loaderText[language]} />
+                        </div>
+                      }
+                      dataLength={resultImageCount}
+                      className="search__content-images"
+                      scrollableTarget="search__content-scrollbar"
+                    >
+                      {resultImage.map((image, index) =>
+                        <div
+                          className="search__content-images-item"
+                          key={`search__content-images-item-${index}-${image.id}`}
+                        >
+                          <ImageBlock title={image.title} link={image.link} imageUrl={image.imageUrl} />
+                        </div>,
+                      )}
+                    </InfiniteScroll>
+                  ) : (
+                    <div className="search__content-item">
+                      <NotFound language={language} searchQuery={initSearchQuery} />
+                    </div>
+                  )
                 )
               )}
             </div>
