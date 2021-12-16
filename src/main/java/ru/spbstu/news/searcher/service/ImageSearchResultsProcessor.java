@@ -44,7 +44,7 @@ public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindI
             Long databaseId = searchIndexDocument.getDatabaseId();
             String title = titleExtractor.getTitleFromFullText(fullText, databaseId, query);
             List<String> imageUrls = searchResult.getImageUrls();
-            if (CollectionUtils.isNotEmpty(imageItems)) {
+            if (CollectionUtils.isNotEmpty(imageUrls)) {
                 for (String imageUrl : imageUrls) {
                     if (StringUtils.isNotBlank(imageUrl)) {
                         imageItems.add(new ImageItem(

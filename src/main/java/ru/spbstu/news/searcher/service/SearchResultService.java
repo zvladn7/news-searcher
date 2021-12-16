@@ -157,7 +157,7 @@ public class SearchResultService {
         if (resultsFromIndex != null) {
             List<ImageItem> searchItems = resultsFromIndex.getImageItems();
             int startIndex = (page - 1) * (DEFAULT_IMAGE_PAGE_SIZE);
-            int endIndex = startIndex + page;
+            int endIndex = startIndex + DEFAULT_IMAGE_PAGE_SIZE;
             return new FindImageResult(
                     searchItems.subList(startIndex, endIndex),
                     resultsFromIndex.getTotalCount());
