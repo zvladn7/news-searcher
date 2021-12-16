@@ -26,11 +26,11 @@ public class SearchController {
 
     @PostMapping("/{page}")
     public ResponseEntity<FindByTextResult> findByText(@PathVariable(name = "page") Integer page,
-                                                       @RequestBody String query) {
+                                                       @RequestBody FindImagesRequest findImagesRequest) {
         Validate.notNull(page);
-        Validate.notNull(query);
+        Validate.notNull(findImagesRequest);
         try {
-            FindByTextResult textResult = searchResultService.findByText(query, page);
+            FindByTextResult textResult = searchResultService.findByText(findImagesRequest.getQuery(), page);
             return ResponseEntity.ok(textResult);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -38,10 +38,10 @@ public class SearchController {
     }
 
     @PostMapping("/similar")
-    public ResponseEntity<List<String>> findSimilar(@NotNull @RequestBody String query) {
-        Validate.notNull(query);
+    public ResponseEntity<List<String>> findSimilar(@NotNull @RequestBody FindImagesRequest findImagesRequest) {
+        Validate.notNull(findImagesRequest);
         try {
-            List<String> similarItems = searchResultService.findSimilar(query);
+            List<String> similarItems = searchResultService.findSimilar(findImagesRequest.getQuery());
             return ResponseEntity.ok(similarItems);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
