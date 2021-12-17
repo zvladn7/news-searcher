@@ -89,15 +89,15 @@ public class SearchResultService {
                                        @Nullable Integer pageSize) throws ResultNotFoundException {
         pageSize = pageSize != null ? pageSize : DEFAULT_PAGE_SIZE;
         int searchMaxThreshold = page * pageSize;
-//        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(textQuery);
-//        if (cacheItemsPair != null) {
-//            Long cacheTotalCount = cacheItemsPair.getKey();
-//            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
-//            int size = cacheItems.size();
-//            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - pageSize <= size) {
-//                return extractFromCache(cacheItems, page, pageSize, cacheTotalCount);
-//            }
-//        }
+        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(textQuery);
+        if (cacheItemsPair != null) {
+            Long cacheTotalCount = cacheItemsPair.getKey();
+            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
+            int size = cacheItems.size();
+            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - pageSize <= size) {
+                return extractFromCache(cacheItems, page, pageSize, cacheTotalCount);
+            }
+        }
         FindByTextResult resultsFromIndex = getResults(textQuery, searchMaxThreshold, textSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<SearchItem> searchItems = resultsFromIndex.getSearchItems();
@@ -152,15 +152,15 @@ public class SearchResultService {
             throw new ResultNotFoundException("Page size should be more than 0: " + query);
         }
         int searchMaxThreshold = (page - 1) * DEFAULT_IMAGE_PAGE_SIZE + FIRST_IMAGE_PAGE_SIZE;
-//        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
-//        if (cacheItemsPair != null) {
-//            Long cacheTotalCount = cacheItemsPair.getKey();
-//            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
-//            int size = cacheItems.size();
-//            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - DEFAULT_IMAGE_PAGE_SIZE <= size) {
-//                return extractImagesResultFromCache(cacheItems, page, DEFAULT_IMAGE_PAGE_SIZE, cacheTotalCount);
-//            }
-//        }
+        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
+        if (cacheItemsPair != null) {
+            Long cacheTotalCount = cacheItemsPair.getKey();
+            List<SearchCacheItem> cacheItems = cacheItemsPair.getValue();
+            int size = cacheItems.size();
+            if (CollectionUtils.isNotEmpty(cacheItems) && searchMaxThreshold - DEFAULT_IMAGE_PAGE_SIZE <= size) {
+                return extractImagesResultFromCache(cacheItems, page, DEFAULT_IMAGE_PAGE_SIZE, cacheTotalCount);
+            }
+        }
         FindImageResult resultsFromIndex = getResults(query, searchMaxThreshold, imageSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<ImageItem> searchItems = resultsFromIndex.getImageItems();

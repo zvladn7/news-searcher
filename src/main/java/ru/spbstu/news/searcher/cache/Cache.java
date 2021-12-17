@@ -28,9 +28,16 @@ public class Cache implements Closeable {
                  @NotNull Integer cachePort) {
         Validate.notNull(cacheHost);
         Validate.notNull(cachePort);
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(CACHE_POOL_SIZE);
-        this.jedisPool = new JedisPool(poolConfig, cacheHost, cachePort, 0);
+        JedisPoolConfig config = new JedisPoolConfig ();
+        config.setMaxTotal (200);
+        config.setMaxIdle (50);
+        config.setMinIdle (8); // Устанавливаем минимальное количество простоя
+        config.setMaxWaitMillis (10000);
+        config.setTestOnBorrow(true);
+        config .setTestOnReturn(true); // Подключаем сканирование при простое
+        config.setTestWhileIdle (true); // Указывает количество миллисекунд для перехода в спящий режим между сканированием незанятого объекта проверкой config.setTimeBetweenEvictionRunsMillis (30000); // Указывает на незанятое обнаружение объекта каждые Максимум количество просканированных объектов config.setNumTestsPerEvictionRun (10); // Указывает, что объект остается в состоянии ожидания, по крайней мере, самое короткое время, прежде чем он может быть отсканирован и удален с помощью объекта, проверяющего неактивный объект; этот элемент имеет смысл, только когда timeBetweenEvictionRunsMillis больше чем 0
+        config.setMinEvictableIdleTimeMillis(60000);
+        this.jedisPool = new JedisPool (config, cacheHost, cachePort, 10000);
     }
     
     public void put(@NotNull String query,
