@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class InMemoryIndexDirectoryRepository {
@@ -19,16 +21,18 @@ public class InMemoryIndexDirectoryRepository {
     private static final Logger logger = LoggerFactory.getLogger(InMemoryIndexDirectoryRepository.class);
 
     private Map<RAMDirectory, Boolean> directoriesMap;
-    private Semaphore semaphore;
+    private final Semaphore semaphore;
+    private final Lock lock;
 
     public InMemoryIndexDirectoryRepository(@Value("${indexer.memory-directory-amount}") Integer directoriesAmount) {
         Validate.notNull(directoriesAmount);
         initDirectoriesMap(directoriesAmount);
         this.semaphore = new Semaphore(directoriesAmount);
+        this.lock = new ReentrantLock();
     }
 
     public void initDirectoriesMap(Integer directoriesAmount) {
-        this.directoriesMap = new HashMap<>(directoriesAmount);
+        this.directoriesMap = new ConcurrentHashMap<>(directoriesAmount);
         for (int i = 0; i < directoriesAmount; ++i) {
             directoriesMap.put(new RAMDirectory(), false);
         }
@@ -36,6 +40,7 @@ public class InMemoryIndexDirectoryRepository {
 
     @Nullable
     public RAMDirectory provideRAMDirectory() {
+        lock.lock();
         try {
             boolean acquired = semaphore.tryAcquire(3, TimeUnit.SECONDS);
             if (acquired) {
@@ -54,6 +59,8 @@ public class InMemoryIndexDirectoryRepository {
         } catch (InterruptedException e) {
             logger.error("Cannot provide RAM directory to index current title", e);
             return null;
+        } finally {
+            lock.unlock();
         }
     }
 

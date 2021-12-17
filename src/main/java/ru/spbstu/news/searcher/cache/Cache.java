@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 
@@ -16,42 +18,38 @@ import java.util.List;
 
 public class Cache implements Closeable {
 
+    private static int CACHE_POOL_SIZE = 5;
+
     private static final Logger logger = LoggerFactory.getLogger(Cache.class);
 
-    private volatile Jedis jedis;
-    private final String cacheHost;
-    private final Integer cachePort;
+    private final JedisPool jedisPool;
 
     public Cache(@NotNull String cacheHost,
                  @NotNull Integer cachePort) {
         Validate.notNull(cacheHost);
         Validate.notNull(cachePort);
-        this.jedis = new Jedis(cacheHost, cachePort);
-        this.cacheHost = cacheHost;
-        this.cachePort = cachePort;
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(CACHE_POOL_SIZE);
+        this.jedisPool = new JedisPool(poolConfig, cacheHost, cachePort, 0);
     }
     
     public void put(@NotNull String query,
                     @NotNull Collection<SearchCacheItem> searchCacheItems,
                     @NotNull Long totalCount) {
         try {
-            jedis.set(query, CacheItemSerializer.serialize(searchCacheItems, totalCount));
+            jedisPool.getResource().set(query, CacheItemSerializer.serialize(searchCacheItems, totalCount));
         } catch (JedisConnectionException ex) {
-            logger.warn("Try to reload connection to cache(Redis DB) on put with query: [{}]", query, ex);
-            this.jedis = new Jedis(cacheHost, cachePort);
-            jedis.set(query, CacheItemSerializer.serialize(searchCacheItems, totalCount));
+            logger.warn("Failed connection to cache(Redis DB) on put with query: [{}]", query, ex);
         }
     }
 
     @Nullable
     public Pair<Long, List<SearchCacheItem>> get(@NotNull String query) {
-        String item;
+        String item = null;
         try {
-            item = jedis.get(query);
+            item = jedisPool.getResource().get(query);
         } catch (JedisConnectionException ex) {
-            logger.warn("Try to reload connection to cache(Redis DB) on get with query: [{}]", query, ex);
-            this.jedis = new Jedis(cacheHost, cachePort);
-            item = jedis.get(query);
+            logger.warn("Failed connection to cache(Redis DB) on get with query: [{}]", query, ex);
         }
         if (item == null) {
             return null;
@@ -61,16 +59,14 @@ public class Cache implements Closeable {
 
     public void invalidate(@NotNull SearchIndexDocument document) {
         try {
-            jedis.flushDB();
+            jedisPool.getResource().flushDB();
         } catch (JedisConnectionException ex) {
-            logger.warn("Try to reload connection to cache(Redis DB) on invalidate with document: [{}]", document, ex);
-            this.jedis = new Jedis(cacheHost, cachePort);
-            jedis.flushDB();
+            logger.warn("Failed connection to cache(Redis DB) on invalidate with document: [{}]", document, ex);
         }
     }
 
     @Override
     public void close() {
-        jedis.close();
+        jedisPool.close();
     }
 }
