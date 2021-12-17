@@ -39,6 +39,7 @@ public class SearchResultService {
 
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_IMAGE_PAGE_SIZE = 20;
+    public static final int FIRST_IMAGE_PAGE_SIZE = 40;
     public static final int MAX_FULL_TEXT_LENGTH = 32766;
     public static final int SIMILAR_ITEMS_COUNT = 8;
 
@@ -147,7 +148,10 @@ public class SearchResultService {
     }
 
     public FindImageResult findImages(int page, String query) throws ResultNotFoundException {
-        int searchMaxThreshold = page * DEFAULT_IMAGE_PAGE_SIZE;
+        if (page <= 0) {
+            throw new ResultNotFoundException("Page size should be more than 0: " + query);
+        }
+        int searchMaxThreshold = (page - 1) * DEFAULT_IMAGE_PAGE_SIZE + FIRST_IMAGE_PAGE_SIZE;
 //        Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
 //        if (cacheItemsPair != null) {
 //            Long cacheTotalCount = cacheItemsPair.getKey();
@@ -160,15 +164,35 @@ public class SearchResultService {
         FindImageResult resultsFromIndex = getResults(query, searchMaxThreshold, imageSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<ImageItem> searchItems = resultsFromIndex.getImageItems();
-            int startIndex = (page - 1) * (DEFAULT_IMAGE_PAGE_SIZE);
-            int endIndex = startIndex + DEFAULT_IMAGE_PAGE_SIZE;
+            int startIndex = getStartIndexForImage(page);
+            int endIndex = getEndIndexForImage(page, startIndex);
             return new FindImageResult(
-                    searchItems.subList(startIndex, endIndex),
+                    searchItems.subList(startIndex, Math.min(searchItems.size(), endIndex)),
                     resultsFromIndex.getTotalCount());
         }
         throw new ResultNotFoundException("No results for query: " + query);
     }
 
+    /**
+     * @param page should be greater than 0
+     */
+    private int getStartIndexForImage(int page) {
+        if (page == 1) {
+            return 0;
+        }
+        return FIRST_IMAGE_PAGE_SIZE + (page - 2) * DEFAULT_IMAGE_PAGE_SIZE;
+    }
+
+    /**
+     * @param page should be greater than 0
+     * @param page should be greater than 0
+     */
+    private int getEndIndexForImage(int page, int startIndex) {
+        if (page == 1) {
+            return FIRST_IMAGE_PAGE_SIZE;
+        }
+        return startIndex + DEFAULT_IMAGE_PAGE_SIZE;
+    }
 
     private FindImageResult extractImagesResultFromCache(List<SearchCacheItem> cacheItems,
                                                          int page,

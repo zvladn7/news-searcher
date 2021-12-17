@@ -11,6 +11,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,8 @@ public class InMemoryIndexComponent {
                 Document document = SearchIndexDocumentConverter.convertInMemory(searchIndexDocument);
                 writer.addDocument(document);
             }
+        } catch (LockObtainFailedException ex) {
+            logger.warn("Lock failed",ex);
         } catch (IOException e) {
             logger.warn("Cannot index documents [{}] in memory index",
                     Arrays.toString(documentsToStoreInMemoryIndex.toArray()), e);
