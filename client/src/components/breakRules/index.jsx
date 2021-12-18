@@ -25,8 +25,8 @@ const BreakRules = (props) => {
         {resultErrorSecondPart[language]}
       </span>
       <div className="break-rules__list-rules">
-        {breakRules.map((rule) => (
-          <div className="break-rules__list-rules-item">
+        {breakRules.map((rule, index) => (
+          <div className="break-rules__list-rules-item" key={`break-rules__list-rules-item-${index}`}>
             {rule[language]}
           </div>
         ))}

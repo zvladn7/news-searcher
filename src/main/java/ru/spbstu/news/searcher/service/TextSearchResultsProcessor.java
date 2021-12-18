@@ -20,10 +20,13 @@ import java.util.stream.Collectors;
 public class TextSearchResultsProcessor implements SearchResultsProcessor<FindByTextResult> {
 
     private final Cache cache;
+    private final TitleExtractor titleExtractor;
 
     @Autowired
-    public TextSearchResultsProcessor(@NotNull Cache cache) {
+    public TextSearchResultsProcessor(@NotNull Cache cache,
+                                      @NotNull TitleExtractor titleExtractor) {
         this.cache = cache;
+        this.titleExtractor = titleExtractor;
     }
 
     @Override
@@ -32,9 +35,10 @@ public class TextSearchResultsProcessor implements SearchResultsProcessor<FindBy
                     .map(entity -> {
                         SearchIndexDocument searchIndexDocument = databaseIdsToDocument.get(entity.getId());
                         String fullText = searchIndexDocument.getFullText();
-                        String title = fullText.substring(0, SearchResultService.DEFAULT_TITLE_LENGTH);
+                        Long databaseId = searchIndexDocument.getDatabaseId();
+                        String title = titleExtractor.getTitleFromFullText(fullText, databaseId, query);
                         return Pair.create(
-                                new SearchItem(entity.getId(), entity.getUrl(), title),
+                                new SearchItem(entity.getId(), title, entity.getUrl()),
                                 new SearchCacheItem(entity.getId(), title, entity.getUrl(), entity.getImageUrls()));
                     }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
         cache.put(query, collectMap.values(), totalCount);
@@ -42,4 +46,5 @@ public class TextSearchResultsProcessor implements SearchResultsProcessor<FindBy
                 new ArrayList<>(collectMap.keySet()),
                 totalCount);
     }
+
 }

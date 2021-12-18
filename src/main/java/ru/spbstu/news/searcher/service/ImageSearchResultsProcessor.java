@@ -1,6 +1,7 @@
 package ru.spbstu.news.searcher.service;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,13 @@ import java.util.Set;
 public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindImageResult> {
 
     private final Cache cache;
+    private final TitleExtractor titleExtractor;
 
     @Autowired
-    public ImageSearchResultsProcessor(@NotNull Cache cache) {
+    public ImageSearchResultsProcessor(@NotNull Cache cache,
+                                       @NotNull TitleExtractor titleExtractor) {
         this.cache = cache;
+        this.titleExtractor = titleExtractor;
     }
 
     @Override
@@ -37,16 +41,19 @@ public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindI
         for (SearchResult searchResult : databaseEntities) {
             SearchIndexDocument searchIndexDocument = databaseIdsToDocument.get(searchResult.getId());
             String fullText = searchIndexDocument.getFullText();
-            String title = fullText.substring(0, SearchResultService.DEFAULT_TITLE_LENGTH);
+            Long databaseId = searchIndexDocument.getDatabaseId();
+            String title = titleExtractor.getTitleFromFullText(fullText, databaseId, query);
             List<String> imageUrls = searchResult.getImageUrls();
-            if (CollectionUtils.isNotEmpty(imageItems)) {
+            if (CollectionUtils.isNotEmpty(imageUrls)) {
                 for (String imageUrl : imageUrls) {
-                    imageItems.add(new ImageItem(
-                            searchResult.getId(),
-                            imageUrl,
-                            title,
-                            searchResult.getUrl()
-                    ));
+                    if (StringUtils.isNotBlank(imageUrl)) {
+                        imageItems.add(new ImageItem(
+                                searchResult.getId(),
+                                imageUrl,
+                                title,
+                                searchResult.getUrl()
+                        ));
+                    }
                 }
             }
             searchCacheItems.add(new SearchCacheItem(
@@ -58,7 +65,7 @@ public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindI
         cache.put(query, new ArrayList<>(searchCacheItems), totalCount);
         return new FindImageResult(
                 imageItems,
-                totalCount
+                imageItems.size()
         );
     }
 

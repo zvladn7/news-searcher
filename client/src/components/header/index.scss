@@ -23,18 +23,19 @@
     line-height: $logo-heading-line-height-small;
     color: $black;
     padding-bottom: 10px;
+    margin-bottom: 10px;
   }
 
   &__search-input-wrapper {
     width: 100%;
     max-width: 570px;
+    margin-bottom: 10px;
   }
 
   &__buttons-group {
     display: flex;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 5px;
+    margin-bottom: 10px;
 
     &--absolute {
       position: absolute;
@@ -66,11 +67,16 @@
     &__title {
       padding-bottom: 0;
       padding-right: 18px;
+      margin-bottom: 15px;
+    }
+
+    &__search-input-wrapper {
+      margin-bottom: 15px;
     }
 
     &__buttons-group {
-      padding-top: 15px;
-      padding-bottom: 10px;
+      margin-bottom: 15px;
+      padding-left: 30px;
     }
 
     &__tabs {
@@ -83,16 +89,22 @@
 
     &__title {
       padding-right: 33px;
+      margin-bottom: 0;
     }
 
     &__search-input-wrapper {
       max-width: 540px;
     }
 
+    &__search-input-wrapper {
+      margin-bottom: 0;
+    }
+
     &__buttons-group {
       padding-top: 0;
       padding-bottom: 0;
       padding-left: 30px;
+      margin-bottom: 0;
     }
 
     &__tabs {

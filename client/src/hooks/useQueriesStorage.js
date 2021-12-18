@@ -14,7 +14,9 @@ export const useQueriesStorage = () => {
       newQueries.pop();
     }
 
-    const index = newQueries.indexOf(query);
+    const index = newQueries.findIndex(
+      (queryStorage) => queryStorage.toLowerCase().trim() === query.toLowerCase().trim()
+    );
     if (index > -1) {
       newQueries.splice(index, 1);
     }
@@ -26,7 +28,9 @@ export const useQueriesStorage = () => {
 
   const deleteQueryFromHistory = useCallback((query) => {
     const newQueries = [...queriesHistory];
-    const index = newQueries.indexOf(query);
+    const index = newQueries.findIndex(
+      (queryStorage) => queryStorage.toLowerCase().trim() === query.toLowerCase().trim()
+    );
 
     if (index > -1) {
       newQueries.splice(index, 1);

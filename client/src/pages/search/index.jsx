@@ -9,23 +9,17 @@ import {
   SEARCH_VALUE_QUERY_PARAMETER,
   TAB_QUERY_PARAMETER,
 } from '../../constants/url';
-import { resultsText } from '../../mocks/resultsText';
-import { similarQueries } from '../../mocks/similarQueries';
 import BlockResultSearch from '../../components/ui/blockResultSearch';
 import {
-  aboutResultsTextFirstPart,
-  aboutResultsTextSecondPart,
   loaderText,
   similarResultsText,
 } from '../../constants/language';
 import SimilarQueries from '../../components/ui/similarQueries';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import { useApi } from '../../hooks/useApi';
 import Loader from '../../components/ui/loader';
 import ReactPaginate from 'react-paginate';
 import ArrowLeft from '../../assets/svg/arrowLeft';
 import ArrowRight from '../../assets/svg/arrowRight';
-import { resultsImage } from '../../mocks/resultsImage';
 import ImageBlock from '../../components/ui/imageBlock';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -33,74 +27,97 @@ import SearchCount from '../../components/ui/searchCount';
 import NotFound from '../../components/notFound';
 import { getBreaksRules } from '../../utils/queryRules';
 import BreakRules from '../../components/breakRules';
+import { useSearchQueryResultText } from '../../services/searchQueryService';
+import { useSimilarQueryResult } from '../../services/similarQueryService';
+import { useSearchQueryResultImage } from '../../services/imagesService';
+
+const RESULTS_TEXT_ON_PAGE = 10;
 
 const Search = () => {
   const [queryParams, navigateWithQueryParams] = useQueryParams();
   const windowSize = useWindowSize();
   const {viewType} = windowSize;
-  const [inputSearchValue, setInputSearchValue] = useState(queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || '');
   const [queriesHistory, addQueryIntoHistory, deleteQueryFromHistory] = useQueriesStorage();
+
+  const [initSearchQuery, setInitSearchQuery] = useState(queryParams.get(SEARCH_VALUE_QUERY_PARAMETER).trim() || '');
+  const [inputSearchValue, setInputSearchValue] = useState(initSearchQuery);
   const [language, changeLanguage] = useLanguage();
   const [tab, setTab] = useState(Number(queryParams.get(TAB_QUERY_PARAMETER)) || 0);
   const [page, setPage] = useState(Number(queryParams.get(PAGE_QUERY_PARAMETER)) || 0);
-  const [breaksRules, setBreaksRules] = useState(getBreaksRules(inputSearchValue));
+  const [breaksRules, setBreaksRules] = useState([]);
+  const [breaksRulesQuery, setBreaksRulesQuery] = useState('');
 
-  // TODO: connect api for text results
-  const {
-    response: resultResponse,
-    isLoading: resultLoading,
-    error: resultError,
-    sendRequest: resultSendRequest,
-  } = useApi({
-    url: `/search/${page}`,
-    method: 'get',
-    headers: JSON.stringify({}),
-    body: JSON.stringify({}),
+  const [
+    resultText,
+    resultTextCount,
+    resultTextLoading,
+    resultTextError,
+    resultTextSendRequest,
+  ] = useSearchQueryResultText(page, inputSearchValue);
 
-  });
+  const [
+    similarQuery,
+    similarQueryLoading,
+    similarQueryError,
+    similarQuerySendRequest,
+  ] = useSimilarQueryResult(inputSearchValue);
 
-  getBreaksRules(inputSearchValue);
-
-  const [result, setResult] = useState(resultsText.searchItems);
-  const [resultCount, setResultCount] = useState(resultsText.totalCount);
-  const [similarQuery, setSimilarQuery] = useState(similarQueries);
-
-  const [resultImage, setResultImage] = useState(resultsImage);
+  const [
+    resultImage,
+    resultImageCount,
+    resultImageLoading,
+    resultImageError,
+    resultImageSendRequest,
+  ] = useSearchQueryResultImage(inputSearchValue);
 
   const handleOnChangeInputSearchValue = (value) => setInputSearchValue(value);
 
   const handleOnSearch = useCallback((query) => {
-    addQueryIntoHistory(query);
-    navigateWithQueryParams(SEARCH_PAGE_PATH, {
-      [SEARCH_VALUE_QUERY_PARAMETER]: query,
-      [TAB_QUERY_PARAMETER]: tab,
-      [PAGE_QUERY_PARAMETER]: 0,
-    });
-    setInputSearchValue(query);
-    setBreaksRules(getBreaksRules(query));
+    const currentQuery = query.trim();
+    addQueryIntoHistory(currentQuery);
+    setInputSearchValue(currentQuery);
+
+    const newBreaksRules = getBreaksRules(query);
+    if (newBreaksRules.length > 0) {
+      setBreaksRules(newBreaksRules);
+      setBreaksRulesQuery(query);
+    } else {
+      setBreaksRules([]);
+      setBreaksRulesQuery('');
+      setPage(0);
+      setInitSearchQuery(query);
+      navigateWithQueryParams(SEARCH_PAGE_PATH, {
+        [SEARCH_VALUE_QUERY_PARAMETER]: currentQuery,
+        [TAB_QUERY_PARAMETER]: tab,
+        [PAGE_QUERY_PARAMETER]: 0,
+      }, true);
+      resultTextSendRequest(0, currentQuery);
+      similarQuerySendRequest(currentQuery);
+      resultImageSendRequest(currentQuery, true);
+    }
   }, [addQueryIntoHistory, tab]);
 
   const handleOnChangeTab = useCallback((tabId) => {
     setTab(tabId);
     navigateWithQueryParams(SEARCH_PAGE_PATH, {
-      [SEARCH_VALUE_QUERY_PARAMETER]: inputSearchValue,
+      [SEARCH_VALUE_QUERY_PARAMETER]: initSearchQuery,
       [TAB_QUERY_PARAMETER]: tabId,
       [PAGE_QUERY_PARAMETER]: page,
-    });
-  }, [inputSearchValue, page]);
+    }, true);
+  }, [inputSearchValue, page, initSearchQuery]);
 
   const handleOnPageChange = useCallback(({selected}) => {
     setPage(selected);
     navigateWithQueryParams(SEARCH_PAGE_PATH, {
-      [SEARCH_VALUE_QUERY_PARAMETER]: inputSearchValue,
+      [SEARCH_VALUE_QUERY_PARAMETER]: initSearchQuery,
       [TAB_QUERY_PARAMETER]: tab,
       [PAGE_QUERY_PARAMETER]: selected,
-    });
-  }, [inputSearchValue, tab]);
+    }, true);
 
-  const handleOnNextImagePage = useCallback(() => {
-    setTimeout(() => setResultImage([...resultImage, ...resultsImage]), 5000);
-  }, [resultImage]);
+    if (selected !== page) {
+      resultTextSendRequest(selected, initSearchQuery);
+    }
+  }, [inputSearchValue, tab, page, initSearchQuery]);
 
   return (
     <div className="search">
@@ -127,26 +144,26 @@ const Search = () => {
                 <div className="search__content-item">
                   <BreakRules
                     breakRules={breaksRules}
-                    searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''}
+                    searchQuery={breaksRulesQuery}
                     language={language}
                   />
                 </div>
               ) : (
-                !!result && result.length > 0 ?
-                  resultLoading ? (
+                resultTextLoading ? (
                     <Loader text={loaderText[language]} />
-                  ) : (
+                  ) :
+                  !!resultText && resultText.length > 0 && !resultTextError ? (
                     <>
                       <div className="search__content-item">
-                        <SearchCount language={language} resultCount={resultCount} />
+                        <SearchCount language={language} resultCount={resultTextCount} />
                       </div>
                       <div className="search__content-item">
                         <BlockResultSearch
-                          title={result[0].title}
-                          link={result[0].link}
+                          title={resultText[0].title}
+                          link={resultText[0].link}
                         />
                       </div>
-                      {similarQuery && page === 0 && (
+                      {!!similarQuery && similarQuery.length > 0 && !similarQueryError && page === 0 && (
                         <div className="search__content-item">
                           <SimilarQueries
                             title={similarResultsText[language]}
@@ -156,7 +173,7 @@ const Search = () => {
                           />
                         </div>
                       )}
-                      {result.slice(1).map((item) => (
+                      {resultText.slice(1).map((item) => (
                         <div className="search__content-item" key={`search__content-item-${item.id}`}>
                           <BlockResultSearch
                             title={item.title}
@@ -164,29 +181,33 @@ const Search = () => {
                           />
                         </div>
                       ))}
-                      <ReactPaginate
-                        pageCount={Math.ceil(resultCount / result.length)}
-                        pageRangeDisplayed={7}
-                        marginPagesDisplayed={0}
-                        previousLabel={<ArrowLeft />}
-                        nextLabel={<ArrowRight />}
-                        breakLabel=""
-                        onPageChange={handleOnPageChange}
-                        initialPage={page}
-                        className="search__content-paginate"
-                        pageClassName="search__content-paginate-li"
-                        activeClassName="search__content-paginate-li search__content-paginate-li--selected"
-                        previousClassName="search__content-paginate-button"
-                        nextClassName="search__content-paginate-button"
-                      />
+                      {resultTextCount > RESULTS_TEXT_ON_PAGE && (
+                        <ReactPaginate
+                          pageCount={Math.ceil(resultTextCount / RESULTS_TEXT_ON_PAGE)}
+                          pageRangeDisplayed={7}
+                          marginPagesDisplayed={0}
+                          previousLabel={<ArrowLeft />}
+                          nextLabel={<ArrowRight />}
+                          breakLabel=""
+                          onPageChange={handleOnPageChange}
+                          initialPage={page}
+                          className="search__content-paginate"
+                          pageClassName="search__content-paginate-li"
+                          activeClassName="search__content-paginate-li search__content-paginate-li--selected"
+                          previousClassName="search__content-paginate-button"
+                          nextClassName="search__content-paginate-button"
+                        />
+                      )}
                     </>
                   ) : (
                     <>
                       <div className="search__content-item">
-                        <SearchCount language={language} resultCount={resultCount} />
+                        <SearchCount language={language} resultCount={resultTextCount} />
                       </div>
                       <div className="search__content-item">
-                        <NotFound language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''} />
+                        <NotFound
+                          language={language} searchQuery={initSearchQuery}
+                        />
                       </div>
                     </>
                   )
@@ -204,34 +225,41 @@ const Search = () => {
                 <div className="search__content-item">
                   <BreakRules
                     breakRules={breaksRules}
-                    searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''}
+                    searchQuery={breaksRulesQuery}
                     language={language}
                   />
                 </div>
               ) : (
-                !!resultImage && resultImage.length > 0 ? (
-                  <InfiniteScroll
-                    hasMore={true}
-                    next={handleOnNextImagePage}
-                    loader={
-                      <div className="search__content-images-loader">
-                        <Loader text={loaderText[language]} />
-                      </div>
-                    }
-                    dataLength={resultImage.length}
-                    className="search__content-images"
-                    scrollableTarget="search__content-scrollbar"
-                  >
-                    {resultImage.map((image) =>
-                      <div className="search__content-images-item" key={`search__content-images-item-${image.id}`}>
-                        <ImageBlock title={image.title} link={image.link} imageUrl={image.images} />
-                      </div>,
-                    )}
-                  </InfiniteScroll>
+                resultImageLoading && resultImage.length === 0 ? (
+                  <Loader text={loaderText[language]} />
                 ) : (
-                  <div className="search__content-item">
-                    <NotFound language={language} searchQuery={queryParams.get(SEARCH_VALUE_QUERY_PARAMETER) || ''} />
-                  </div>
+                  !!resultImage && resultImage.length > 0 ? (
+                    <InfiniteScroll
+                      hasMore={!resultImageError}
+                      next={() => resultImageSendRequest(inputSearchValue)}
+                      loader={
+                        <div className="search__content-images-loader">
+                          <Loader text={loaderText[language]} />
+                        </div>
+                      }
+                      dataLength={resultImageCount}
+                      className="search__content-images"
+                      scrollableTarget="search__content-scrollbar"
+                    >
+                      {resultImage.map((image, index) =>
+                        <div
+                          className="search__content-images-item"
+                          key={`search__content-images-item-${index}-${image.id}`}
+                        >
+                          <ImageBlock title={image.title} link={image.link} imageUrl={image.imageUrl} />
+                        </div>,
+                      )}
+                    </InfiniteScroll>
+                  ) : (
+                    <div className="search__content-item">
+                      <NotFound language={language} searchQuery={initSearchQuery} />
+                    </div>
+                  )
                 )
               )}
             </div>
