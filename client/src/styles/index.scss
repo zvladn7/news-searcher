@@ -1,0 +1,31 @@
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/functions';
+@import '~typeface-roboto';
+@import 'reset';
+@import 'variables';
+@import 'typography';
+@import 'defaultStyles';
+
+// pages
+@import '../pages/ui-kit';
+@import '../pages/welcome';
+@import '../pages/search';
+@import '../pages/notFoundPage';
+
+// components
+@import '../components/inputSearch';
+@import '../components/header';
+@import '../components/notFound';
+@import '../components/breakRules';
+
+// ui-components
+@import '../components/ui/input';
+@import '../components/ui/searchButton';
+@import '../components/ui/languageButton';
+@import '../components/ui/blockResultSearch';
+@import '../components/ui/similarQueries';
+@import '../components/ui/termsBlock';
+@import '../components/ui/imageBlock';
+@import '../components/ui/tabs';
+@import '../components/ui/loader';
+@import '../components/ui/searchCount';

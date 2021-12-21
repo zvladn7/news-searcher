@@ -1,0 +1,123 @@
+.search {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+
+  &__header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  &__content-wrapper {
+    position: relative;
+    margin-top: 180px;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  &__content {
+    width: 100%;
+    padding: 20px 16px 80px;
+  }
+
+  &__content-item {
+    max-width: 540px;
+    margin-bottom: 20px;
+  }
+
+  &__content-paginate {
+    width: 100%;
+    max-width: 540px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    ul {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &__content-paginate-li {
+    @include text-result;
+    font-weight: 500;
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    color: $black;
+
+    &--selected {
+      border-radius: 100%;
+      background: $purple;
+      color: $white;
+    }
+  }
+
+  &__content-paginate-button {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    color: $black;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: $black;
+    }
+  }
+
+  &__content-images {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  &__content-images-item {
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+
+  &__content-images-loader {
+    position: relative;
+    width: 100%;
+    height: 200px;
+  }
+
+  @include media-breakpoint-up(md) {
+    &__content-wrapper {
+      margin-top: 130px;
+    }
+
+    &__content {
+      padding-left: 40px;
+    }
+
+    &__content-images-loader {
+      width: calc(100% - 64px);
+    }
+  }
+
+  @include media-breakpoint-up(xl) {
+    &__content {
+      padding-left: 145px;
+    }
+
+    &__content-images-loader {
+      width: calc(100% - 129px);
+    }
+  }
+}
