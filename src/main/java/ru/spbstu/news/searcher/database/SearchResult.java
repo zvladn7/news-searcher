@@ -22,7 +22,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@Table(name = "searching")
 public class SearchResult {
 
     public SearchResult(final String url, final List<String> imageUrls) {
@@ -38,6 +37,7 @@ public class SearchResult {
     private String url;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Column(columnDefinition = "TEXT")
     private List<String> imageUrls;
 
     @Override

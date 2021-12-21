@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.spbstu.news.searcher.controller.request.FindImagesRequest;
+import ru.spbstu.news.searcher.controller.request.FindRequest;
 import ru.spbstu.news.searcher.controller.request.ItemToIndex;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
@@ -36,11 +36,11 @@ public class SearchController {
 
     @PostMapping("/{page}")
     public ResponseEntity<FindByTextResult> findByText(@PathVariable(name = "page") Integer page,
-                                                       @RequestBody FindImagesRequest findImagesRequest) {
+                                                       @RequestBody FindRequest findRequest) {
         Validate.notNull(page);
-        Validate.notNull(findImagesRequest);
+        Validate.notNull(findRequest);
         try {
-            FindByTextResult textResult = searchResultService.findByText(findImagesRequest.getQuery(), page);
+            FindByTextResult textResult = searchResultService.findByText(findRequest.getQuery(), page);
             return ResponseEntity.ok(textResult);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -48,10 +48,10 @@ public class SearchController {
     }
 
     @PostMapping("/similar")
-    public ResponseEntity<List<String>> findSimilar(@NotNull @RequestBody FindImagesRequest findImagesRequest) {
-        Validate.notNull(findImagesRequest);
+    public ResponseEntity<List<String>> findSimilar(@NotNull @RequestBody FindRequest findRequest) {
+        Validate.notNull(findRequest);
         try {
-            List<String> similarItems = searchResultService.findSimilar(findImagesRequest.getQuery());
+            List<String> similarItems = searchResultService.findSimilar(findRequest.getQuery());
             return ResponseEntity.ok(similarItems);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -59,7 +59,7 @@ public class SearchController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<FindImageResult> findImages(@RequestBody FindImagesRequest imagesRequest) {
+    public ResponseEntity<FindImageResult> findImages(@RequestBody FindRequest imagesRequest) {
         Validate.notNull(imagesRequest);
         Validate.notNull(imagesRequest.getQuery());
         try {

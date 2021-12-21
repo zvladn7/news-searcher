@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class FindImagesRequest {
+public class FindRequest {
 
     private final String query;
     private final int page;
