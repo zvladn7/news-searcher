@@ -23,7 +23,7 @@ public class TitleExtractor {
 
     private static final Logger logger = LoggerFactory.getLogger(TitleExtractor.class);
 
-    private final static Integer LENGTH_TO_SPLIT_FULL_TEXT = 30;
+    private final static Integer LENGTH_TO_SPLIT_FULL_TEXT = 100;
     private final static Integer DEFAULT_LENGTH_OF_TITLE_FROM_START = 20;
 
     private final InMemoryIndexComponent inMemoryIndexComponent;

@@ -184,7 +184,7 @@ const Search = () => {
                       {resultTextCount > RESULTS_TEXT_ON_PAGE && (
                         <ReactPaginate
                           pageCount={Math.ceil(resultTextCount / RESULTS_TEXT_ON_PAGE)}
-                          pageRangeDisplayed={7}
+                          pageRangeDisplayed={6}
                           marginPagesDisplayed={0}
                           previousLabel={<ArrowLeft />}
                           nextLabel={<ArrowRight />}

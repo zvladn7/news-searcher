@@ -43,9 +43,9 @@ public class NewsCrawlerController {
         // cache folder
         config.setCrawlStorageFolder(Files.createTempDir().getAbsolutePath());
         // parsing depth
-        config.setMaxDepthOfCrawling(1);
+//        config.setMaxDepthOfCrawling(1);
         // parsing count
-        config.setMaxPagesToFetch(20);
+        config.setMaxPagesToFetch(200);
         // resume after process death
         config.setResumableCrawling(true);
     }
