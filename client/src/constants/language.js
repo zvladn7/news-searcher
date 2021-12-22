@@ -14,7 +14,7 @@ export const searchInputPlaceholder = {
 };
 
 export const searchButtonText = {
-  RU: 'ИСКАТЬ',
+  RU: 'ПОИСК',
   EN: 'SEARCH',
 };
 
