@@ -30,7 +30,7 @@ public class LoggingIndexerComponent implements IndexerComponent {
     }
 
     @Override
-    public void open(@NotNull String indexDir) throws LuceneIndexingException {
+    public void open(@NotNull String indexDir) throws LuceneIndexingException, IOException {
         indexerComponent.open(indexDir);
         if (loggingEnabled) {
             logger.info("Index which stored in directory:[{}] is opened", indexDir);

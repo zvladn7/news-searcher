@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.spbstu.news.searcher.database.SearchResult;
+import ru.spbstu.news.searcher.scanner.NewsCrawlerController;
 import ru.spbstu.news.searcher.service.SearchResultService;
 
 import java.util.List;
@@ -28,5 +29,4 @@ class NewsSearcherApplicationTests {
         assertTrue(newSearchResult.equals(searchResult));
         searchResultService.removeSearchResult(newSearchResult);
     }
-
 }

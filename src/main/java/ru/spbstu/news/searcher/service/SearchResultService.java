@@ -2,9 +2,12 @@ package ru.spbstu.news.searcher.service;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.spbstu.news.searcher.cache.Cache;
@@ -14,7 +17,6 @@ import ru.spbstu.news.searcher.controller.result.FindByTextResult;
 import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.ImageItem;
 import ru.spbstu.news.searcher.controller.result.SearchItem;
-import ru.spbstu.news.searcher.controller.result.SimilarItem;
 import ru.spbstu.news.searcher.database.SearchResult;
 import ru.spbstu.news.searcher.database.SearchResultRepository;
 import ru.spbstu.news.searcher.exception.ResultNotFoundException;
@@ -33,9 +35,12 @@ import java.util.stream.Collectors;
 @Service
 public class SearchResultService {
 
-    public static final int DEFAULT_PAGE_SIZE = 5;
+    private static final Logger logger = LoggerFactory.getLogger(SearchResultService.class);
+
+    public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_IMAGE_PAGE_SIZE = 20;
-    public static final int DEFAULT_TITLE_LENGTH = 10;
+    public static final int FIRST_IMAGE_PAGE_SIZE = 40;
+    public static final int MAX_FULL_TEXT_LENGTH = 32766;
     public static final int SIMILAR_ITEMS_COUNT = 8;
 
     private final SearchResultRepository searchResultRepository;
@@ -48,7 +53,7 @@ public class SearchResultService {
     @Autowired
     public SearchResultService(@NotNull final SearchResultRepository searchResultRepository,
                                @NotNull final IndexSearcherComponent indexSearcherComponent,
-                               @NotNull IndexWriterComponent indexWriterComponent,
+                               @NotNull final IndexWriterComponent indexWriterComponent,
                                @NotNull final Cache cache,
                                @NotNull final ImageSearchResultsProcessor imageSearchResultsProcessor,
                                @NotNull final TextSearchResultsProcessor textSearchResultsProcessor) {
@@ -134,16 +139,19 @@ public class SearchResultService {
         return new FindByTextResult(searchItems, cacheTotalCount);
     }
 
-    public List<SimilarItem> findSimilar(String query) throws ResultNotFoundException {
+    public List<String> findSimilar(String query) throws ResultNotFoundException {
         FindByTextResult textResult = findByText(query, 1, SIMILAR_ITEMS_COUNT);
         List<SearchItem> searchItems = textResult.getSearchItems();
         return searchItems.stream()
-                .map(item -> new SimilarItem(item.getTitle(), item.getLink()))
+                .map(SearchItem::getTitle)
                 .collect(Collectors.toList());
     }
 
     public FindImageResult findImages(int page, String query) throws ResultNotFoundException {
-        int searchMaxThreshold = page * DEFAULT_IMAGE_PAGE_SIZE;
+        if (page <= 0) {
+            throw new ResultNotFoundException("Page size should be more than 0: " + query);
+        }
+        int searchMaxThreshold = (page - 1) * DEFAULT_IMAGE_PAGE_SIZE + FIRST_IMAGE_PAGE_SIZE;
         Pair<Long, List<SearchCacheItem>> cacheItemsPair = cache.get(query);
         if (cacheItemsPair != null) {
             Long cacheTotalCount = cacheItemsPair.getKey();
@@ -156,15 +164,35 @@ public class SearchResultService {
         FindImageResult resultsFromIndex = getResults(query, searchMaxThreshold, imageSearchResultsProcessor);
         if (resultsFromIndex != null) {
             List<ImageItem> searchItems = resultsFromIndex.getImageItems();
-            int startIndex = (page - 1) * (DEFAULT_IMAGE_PAGE_SIZE);
-            int endIndex = startIndex + page;
+            int startIndex = getStartIndexForImage(page);
+            int endIndex = getEndIndexForImage(page, startIndex);
             return new FindImageResult(
-                    searchItems.subList(startIndex, endIndex),
+                    searchItems.subList(startIndex, Math.min(searchItems.size(), endIndex)),
                     resultsFromIndex.getTotalCount());
         }
         throw new ResultNotFoundException("No results for query: " + query);
     }
 
+    /**
+     * @param page should be greater than 0
+     */
+    private int getStartIndexForImage(int page) {
+        if (page == 1) {
+            return 0;
+        }
+        return FIRST_IMAGE_PAGE_SIZE + (page - 2) * DEFAULT_IMAGE_PAGE_SIZE;
+    }
+
+    /**
+     * @param page should be greater than 0
+     * @param page should be greater than 0
+     */
+    private int getEndIndexForImage(int page, int startIndex) {
+        if (page == 1) {
+            return FIRST_IMAGE_PAGE_SIZE;
+        }
+        return startIndex + DEFAULT_IMAGE_PAGE_SIZE;
+    }
 
     private FindImageResult extractImagesResultFromCache(List<SearchCacheItem> cacheItems,
                                                          int page,
@@ -177,18 +205,24 @@ public class SearchResultService {
         for (SearchCacheItem cacheItem : cacheItems) {
             List<String> imageUrls = cacheItem.getImageUrls();
             for (String imageUrl : imageUrls) {
-                imageItems.add(new ImageItem(
-                        cacheItem.getId(),
-                        imageUrl,
-                        cacheItem.getTitle(),
-                        cacheItem.getUrl()
-                ));
+                if (StringUtils.isNotBlank(imageUrl)) {
+                    imageItems.add(new ImageItem(
+                            cacheItem.getId(),
+                            imageUrl,
+                            cacheItem.getTitle(),
+                            cacheItem.getUrl()
+                    ));
+                }
             }
         }
-        return new FindImageResult(imageItems, cacheTotalCount);
+        return new FindImageResult(imageItems, imageItems.size());
     }
 
     public void index(@NotNull ItemToIndex itemToIndex) throws LuceneOpenException {
+        if (itemToIndex.getText() == null || itemToIndex.getText().length() > MAX_FULL_TEXT_LENGTH) {
+            logger.warn("Text is too long too index it, item to index: [{}]", itemToIndex);
+            return;
+        }
         SearchResult searchResult = new SearchResult(itemToIndex.getUrl(), itemToIndex.getImageUrls());
         SearchResult save = searchResultRepository.save(searchResult);
         SearchIndexDocument searchIndexDocument = new SearchIndexDocument(save.getId(), itemToIndex.getText());

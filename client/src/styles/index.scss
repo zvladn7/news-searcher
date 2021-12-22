@@ -1,12 +1,12 @@
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/functions';
+@import '~typeface-roboto';
 @import 'reset';
 @import 'variables';
 @import 'typography';
 @import 'defaultStyles';
 
 // pages
-@import '../pages/ui-kit';
 @import '../pages/welcome';
 @import '../pages/search';
 @import '../pages/notFoundPage';
