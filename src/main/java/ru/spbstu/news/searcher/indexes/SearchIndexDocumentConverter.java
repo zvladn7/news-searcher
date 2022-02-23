@@ -24,8 +24,8 @@ public class SearchIndexDocumentConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchIndexDocumentConverter.class);
 
-    private static final String DATABASE_ID_FIELD = "database_id";
-    private static final String FULL_TEXT_FIELD = "full_text";
+    public static final String DATABASE_ID_FIELD = "database_id";
+    public static final String FULL_TEXT_FIELD = "full_text";
 
     private static final Analyzer analyzer = AnalyzerProvider.provide();
 
