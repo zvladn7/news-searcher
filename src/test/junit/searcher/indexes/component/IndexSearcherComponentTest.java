@@ -28,7 +28,7 @@ public class IndexSearcherComponentTest {
 
     @Test(expected = LuceneIndexIllegalPartitions.class)
     public void construct_InvalidPartitions() throws LuceneIndexIllegalPartitions {
-        new IndexSearcherComponent(1, "/src", indexWriterComponent);
+        new IndexSearcherComponent(0, "/src", indexWriterComponent);
     }
 
     @Test(expected = NullPointerException.class)
