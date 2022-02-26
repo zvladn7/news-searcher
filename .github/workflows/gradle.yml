@@ -61,6 +61,12 @@ jobs:
         run: ./gradlew build -x test
       - name: Run tests with Gradle
         run: ./gradlew test
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+            name: Unit Test Results
+            path: test-results/**/*.xml
 
 
   integration-tests:
@@ -84,3 +90,25 @@ jobs:
         run: ./gradlew build -x test
       - name: Run tests with Gradle
         run: ./gradlew integrationTest
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+            name: Unit Test Results
+            path: test-results/**/*.xml
+
+  publish-test-results:
+    name: "Publish Unit Tests Results"
+    needs: build-and-test
+    runs-on: macos-latest
+    # the build-and-test job might be skipped, we don't need to run this job then
+    if: success() || failure()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: artifacts/**/*.xml
