@@ -1,5 +1,6 @@
 package ru.spbstu.news.searcher.indexes.component;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.util.Pair;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
@@ -41,6 +42,7 @@ public class IndexSearcherComponent implements Searcher {
     public IndexSearcherComponent(@Value("${indexer.partions.amount}") int partitions,
                                   @Value("${indexer.indexDir}") String indexDir,
                                   @NotNull IndexWriterComponent indexWriterComponent) throws LuceneIndexIllegalPartitions {
+        Validate.notNull(indexWriterComponent);
         if (partitions <= 0) {
             throw new LuceneIndexIllegalPartitions("Number of partitions is less than 0");
         }
@@ -121,5 +123,9 @@ public class IndexSearcherComponent implements Searcher {
         for (LuceneIndexSearcher luceneIndexSearcher : luceneIndexSearchers) {
             luceneIndexSearcher.close();
         }
+    }
+
+    protected LuceneIndexSearcher[] getLuceneIndexSearchers() {
+        return luceneIndexSearchers;
     }
 }

@@ -40,7 +40,7 @@ public class SearchIndexDocumentConverter {
     @Nullable
     public static Query createQueryDatabaseId(@Nullable Long databaseId) throws ParseException {
         String databaseIdString = String.valueOf(databaseId);
-        if (databaseIdString == null) {
+        if ("null".equals(databaseIdString)) {
             return null;
         }
         return new QueryParser(DATABASE_ID_FIELD, analyzer).parse(databaseIdString);
@@ -52,6 +52,7 @@ public class SearchIndexDocumentConverter {
     }
 
     public static Term createDatabaseIdTerm(@NotNull Long databaseId) {
+        Validate.notNull(databaseId);
         String databaseIdString = String.valueOf(databaseId);
         return new Term(DATABASE_ID_FIELD, databaseIdString);
     }
