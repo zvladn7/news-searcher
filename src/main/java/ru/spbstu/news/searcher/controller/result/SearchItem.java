@@ -1,10 +1,12 @@
 package ru.spbstu.news.searcher.controller.result;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class SearchItem {
 
     private final long id;
