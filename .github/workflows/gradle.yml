@@ -59,14 +59,14 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build with Gradle
         run: ./gradlew build -x test
-      - name: Run tests with Gradle
+      - name: Run tesxmls with Gradle
         run: ./gradlew test
       - name: Upload Unit Test Results
         if: always()
         uses: actions/upload-artifact@v2
         with:
             name: Unit Test Results
-            path: ~/build/test-results/test/**/*.xml
+            path: "**/build/test-results/test/**/*.xml"
 
 
   integration-tests:
@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: Unit Test Results
-            path: ~/build/test-results/integrationTest/**/*.xml
+            path: "**/build/test-results/integrationTest/**/*.xml"
 
   publish-unit-test-results:
     name: "Publish Unit Tests Results"
