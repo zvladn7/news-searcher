@@ -85,4 +85,5 @@ sourceSets {
 task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath += sourceSets.integrationTest.runtimeClasspath
+//    reports.junitXml.enabled = true
 }
