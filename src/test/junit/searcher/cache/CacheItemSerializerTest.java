@@ -35,7 +35,7 @@ public class CacheItemSerializerTest {
         String[] itemsSplit = itemsInJson.split(CacheItemSerializer.DELIMITER);
         Assert.assertEquals(cacheItems.size(), itemsSplit.length);
         for (int i = 0; i < cacheItems.size(); ++i) {
-            String itemInJson = itemsSplit[i];;
+            String itemInJson = itemsSplit[i];
             SearchCacheItem searchCacheItem = objectMapper.readValue(itemInJson, SearchCacheItem.class);
             Assert.assertEquals(cacheItems.get(i), searchCacheItem);
         }
