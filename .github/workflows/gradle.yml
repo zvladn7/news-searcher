@@ -97,9 +97,9 @@ jobs:
             name: Unit Test Results
             path: test-results/**/*.xml
 
-  publish-test-results:
+  publish-unit-test-results:
     name: "Publish Unit Tests Results"
-    needs: build-and-test
+    needs: unit-tests
     runs-on: macos-latest
     # the build-and-test job might be skipped, we don't need to run this job then
     if: success() || failure()
@@ -109,6 +109,22 @@ jobs:
         with:
           path: artifacts
       - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: artifacts/**/*.xml
+
+  publish-integration-test-results:
+    name: "Publish Integration Tests Results"
+    needs: integration-tests
+    runs-on: macos-latest
+    # the build-and-test job might be skipped, we don't need to run this job then
+    if: success() || failure()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+      - name: Publish Integration Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
           files: artifacts/**/*.xml
