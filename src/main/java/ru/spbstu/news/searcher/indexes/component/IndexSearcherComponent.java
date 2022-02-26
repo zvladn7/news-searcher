@@ -48,7 +48,7 @@ public class IndexSearcherComponent implements Searcher {
         }
         this.indexDir = indexDir;
         this.luceneIndexSearchers = new LuceneIndexSearcher[partitions];
-        for (int partition = 1; partition <= partitions; ++partitions) {
+        for (int partition = 1; partition <= partitions; ++partition) {
             luceneIndexSearchers[toIndex(partition)] = new LuceneIndexSearcher(String.valueOf(partition), partition);
         }
         this.indexWriterComponent = indexWriterComponent;
