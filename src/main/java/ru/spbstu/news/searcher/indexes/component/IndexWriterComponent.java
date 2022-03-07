@@ -1,10 +1,10 @@
 package ru.spbstu.news.searcher.indexes.component;
 
+import org.apache.commons.codec.digest.MurmurHash2;
 import org.apache.lucene.index.Term;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.spbstu.news.searcher.indexes.IndexPartitioner;
 import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneIndexIllegalPartitions;
 import ru.spbstu.news.searcher.indexes.exceptions.LuceneIndexingException;
@@ -67,7 +67,7 @@ public class IndexWriterComponent implements IndexerComponent {
 
     @Override
     public void index(@NotNull SearchIndexDocument searchIndexDocument) throws LuceneOpenException {
-        int partition = IndexPartitioner.getPartition(searchIndexDocument, partitions);
+        int partition = getPartition(searchIndexDocument, partitions);
         IndexerComponent luceneIndexWriter = luceneIndexWriters[toIndex(partition)];
         luceneIndexWriter.index(searchIndexDocument);
         cacheInvalidator.invalidate(searchIndexDocument);
@@ -99,5 +99,12 @@ public class IndexWriterComponent implements IndexerComponent {
     @Override
     public String dir() throws OperationNotSupportedException {
         throw new OperationNotSupportedException("Operation not provided for collection of indexer writers");
+    }
+
+    public static int getPartition(@NotNull SearchIndexDocument indexDocument,
+                                   int partitionsAmount) {
+        String fullText = indexDocument.getFullText();
+        int hash = MurmurHash2.hash32(fullText);
+        return (hash % partitionsAmount) + 1;
     }
 }

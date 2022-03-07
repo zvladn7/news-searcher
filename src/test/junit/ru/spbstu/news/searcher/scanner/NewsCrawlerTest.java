@@ -14,7 +14,7 @@ import ru.spbstu.news.searcher.service.SearchResultService;
 import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NewCrawlerTest {
+public class NewsCrawlerTest {
 
     @Mock
     private SearchResultService searchResultService;
