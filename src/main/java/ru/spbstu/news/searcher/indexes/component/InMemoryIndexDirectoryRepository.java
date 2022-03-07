@@ -19,10 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class InMemoryIndexDirectoryRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryIndexDirectoryRepository.class);
-
     private Map<RAMDirectory, Boolean> directoriesMap;
-    private final Semaphore semaphore;
-    private final Lock lock;
+    private Semaphore semaphore;
+    private Lock lock;
 
     public InMemoryIndexDirectoryRepository(@Value("${indexer.memory-directory-amount}") Integer directoriesAmount) {
         Validate.notNull(directoriesAmount);
@@ -67,6 +66,23 @@ public class InMemoryIndexDirectoryRepository {
     public void releaseRAMDirectory(RAMDirectory ramDirectory) {
         directoriesMap.put(ramDirectory, false);
         semaphore.release();
+    }
+
+    // for testing
+    protected Map<RAMDirectory, Boolean> getDirectoriesMap() {
+        return directoriesMap;
+    }
+
+    protected Semaphore getSemaphore() {
+        return semaphore;
+    }
+
+    protected Lock getLock() {
+        return lock;
+    }
+
+    public void setSemaphore(Semaphore semaphore) {
+        this.semaphore = semaphore;
     }
 
 }

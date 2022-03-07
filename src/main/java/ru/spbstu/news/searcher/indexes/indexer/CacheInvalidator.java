@@ -22,12 +22,14 @@ public class CacheInvalidator {
         this.cache = cache;
     }
 
-    public void invalidate(@NotNull SearchIndexDocument searchIndexDocument) {
+    public boolean invalidate(@NotNull SearchIndexDocument searchIndexDocument) {
         Validate.notNull(searchIndexDocument);
         try {
             cache.invalidate(searchIndexDocument);
+            return true;
         } catch (Exception e) {
             logger.error("Cannot invalidate cache on index new document: [{}]", searchIndexDocument, e);
+            return false;
         }
     }
 

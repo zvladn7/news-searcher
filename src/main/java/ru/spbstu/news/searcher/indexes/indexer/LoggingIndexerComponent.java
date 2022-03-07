@@ -54,11 +54,12 @@ public class LoggingIndexerComponent implements IndexerComponent {
     }
 
     @Override
-    public void commit() throws IOException {
-        indexerComponent.commit();
+    public boolean commit() throws IOException {
+        boolean committed = indexerComponent.commit();
         if (loggingEnabled) {
             logger.info("Data is committed in index file: [{}]", dir());
         }
+        return committed;
     }
 
     @Override

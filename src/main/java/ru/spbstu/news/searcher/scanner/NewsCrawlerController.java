@@ -7,6 +7,7 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import org.jetbrains.annotations.NotNull;
+import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ public class NewsCrawlerController {
 
     @Autowired
     public NewsCrawlerController(@NotNull final NewsCrawlerFactory newsCrawlerFactory) {
+        Validate.notNull(newsCrawlerFactory);
         this.newsCrawlerFactory = newsCrawlerFactory;
     }
 
@@ -37,7 +39,7 @@ public class NewsCrawlerController {
         }
     }
 
-    private void configure(@NotNull final CrawlConfig config) {
+    public void configure(@NotNull final CrawlConfig config) {
         // delay
         config.setPolitenessDelay(100);
         // cache folder

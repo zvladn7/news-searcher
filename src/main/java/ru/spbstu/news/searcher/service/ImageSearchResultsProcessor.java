@@ -2,6 +2,7 @@ package ru.spbstu.news.searcher.service;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,10 @@ public class ImageSearchResultsProcessor implements SearchResultsProcessor<FindI
                                               @NotNull List<SearchResult> databaseEntities,
                                               @NotNull Map<Long, SearchIndexDocument> databaseIdsToDocument,
                                               @NotNull Long totalCount) {
+        Validate.notNull(query);
+        Validate.notNull(databaseEntities);
+        Validate.notNull(databaseIdsToDocument);
+        Validate.notNull(totalCount);
         List<ImageItem> imageItems = new ArrayList<>();
         Set<SearchCacheItem> searchCacheItems = new HashSet<>();
         for (SearchResult searchResult : databaseEntities) {

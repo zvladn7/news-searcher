@@ -1,11 +1,11 @@
 package ru.spbstu.news.searcher.indexes.indexer;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -38,6 +38,7 @@ public class LuceneIndexWriter implements IndexerComponent {
 
     @Override
     public void open(@NotNull String indexDir) throws LuceneIndexingException {
+        Validate.notNull(indexDir);
         if (isOpen()) {
             logger.warn("The index file with name: [{}] is already opened", indexFile.getName());
             throw new LuceneIndexingException("The index file is already opened!");
@@ -95,11 +96,13 @@ public class LuceneIndexWriter implements IndexerComponent {
     }
 
     @Override
-    public void commit() throws IOException {
+    public boolean commit() throws IOException {
         try {
             indexWriter.commit();
+            return true;
         } catch (IOException e) {
             logger.warn("Cannot commit index", e);
+            return false;
         }
     }
 
@@ -124,6 +127,12 @@ public class LuceneIndexWriter implements IndexerComponent {
     @Override
     public String dir() {
         return indexDirectory != null ? indexFile.getName() : null;
+    }
+
+    // for testing purposes
+
+    protected void setIndexWriter(IndexWriter indexWriter) {
+        this.indexWriter = indexWriter;
     }
 
 }

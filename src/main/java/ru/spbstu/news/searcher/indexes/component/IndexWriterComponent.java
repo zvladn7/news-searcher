@@ -1,5 +1,6 @@
 package ru.spbstu.news.searcher.indexes.component;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.lucene.index.Term;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,8 @@ public class IndexWriterComponent implements IndexerComponent {
                                 @Value("${indexer.trace.actions}") boolean loggingEnabled,
                                 @Value("${indexer.indexDir}") String indexDir,
                                 @NotNull CacheInvalidator cacheInvalidator) throws LuceneIndexIllegalPartitions {
+        Validate.notNull(indexDir);
+        Validate.notNull(cacheInvalidator);
         this.cacheInvalidator = cacheInvalidator;
         if (partitions <= 0) {
             throw new LuceneIndexIllegalPartitions("Number of partitions is less than 0");
@@ -52,6 +55,10 @@ public class IndexWriterComponent implements IndexerComponent {
         this.onIndexUpdateListener = onIndexUpdateListener;
     }
 
+    protected Runnable getOnIndexUpdateListener() {
+        return onIndexUpdateListener;
+    }
+
     @PostConstruct
     public void init() throws LuceneIndexingException, IOException {
         open(indexDir);
@@ -67,6 +74,7 @@ public class IndexWriterComponent implements IndexerComponent {
 
     @Override
     public void index(@NotNull SearchIndexDocument searchIndexDocument) throws LuceneOpenException {
+        Validate.notNull(searchIndexDocument);
         int partition = IndexPartitioner.getPartition(searchIndexDocument, partitions);
         IndexerComponent luceneIndexWriter = luceneIndexWriters[toIndex(partition)];
         luceneIndexWriter.index(searchIndexDocument);
@@ -82,10 +90,12 @@ public class IndexWriterComponent implements IndexerComponent {
     }
 
     @Override
-    public void commit() throws IOException {
+    public boolean commit() throws IOException {
+        boolean commit = true;
         for (IndexerComponent luceneIndexWriter : luceneIndexWriters) {
-            luceneIndexWriter.commit();
+            commit &= luceneIndexWriter.commit();
         }
+        return commit;
     }
 
     @PreDestroy
@@ -100,4 +110,9 @@ public class IndexWriterComponent implements IndexerComponent {
     public String dir() throws OperationNotSupportedException {
         throw new OperationNotSupportedException("Operation not provided for collection of indexer writers");
     }
+
+    protected IndexerComponent[] getLuceneIndexWriters() {
+        return luceneIndexWriters;
+    }
+
 }

@@ -102,4 +102,17 @@ public class IndexSearcherComponentTest {
         Long expected = 0L;
         Assert.assertEquals(expected, results.getSecond());
     }
+
+    @Test
+    public void close_Normal() throws LuceneIndexIllegalPartitions {
+        int partitions = 1;
+        String indexDir = "/indexDir";
+        IndexSearcherComponent indexSearcherComponent = new IndexSearcherComponent(partitions, indexDir, indexWriterComponent);
+        indexSearcherComponent.getLuceneIndexSearchers()[0] = spy(indexSearcherComponent.getLuceneIndexSearchers()[0]);
+        Mockito.doNothing().when(indexSearcherComponent.getLuceneIndexSearchers()[0]).close();
+        indexSearcherComponent.close();
+        Mockito.verify(indexSearcherComponent.getLuceneIndexSearchers()[0], Mockito.times(1))
+                .close();
+    }
+
 }
