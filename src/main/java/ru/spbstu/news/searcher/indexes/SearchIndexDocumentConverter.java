@@ -24,8 +24,8 @@ public class SearchIndexDocumentConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchIndexDocumentConverter.class);
 
-    private static final String DATABASE_ID_FIELD = "database_id";
-    private static final String FULL_TEXT_FIELD = "full_text";
+    public static final String DATABASE_ID_FIELD = "database_id";
+    public static final String FULL_TEXT_FIELD = "full_text";
 
     private static final Analyzer analyzer = AnalyzerProvider.provide();
 
@@ -40,7 +40,7 @@ public class SearchIndexDocumentConverter {
     @Nullable
     public static Query createQueryDatabaseId(@Nullable Long databaseId) throws ParseException {
         String databaseIdString = String.valueOf(databaseId);
-        if (databaseIdString == null) {
+        if ("null".equals(databaseIdString)) {
             return null;
         }
         return new QueryParser(DATABASE_ID_FIELD, analyzer).parse(databaseIdString);
@@ -52,6 +52,7 @@ public class SearchIndexDocumentConverter {
     }
 
     public static Term createDatabaseIdTerm(@NotNull Long databaseId) {
+        Validate.notNull(databaseId);
         String databaseIdString = String.valueOf(databaseId);
         return new Term(DATABASE_ID_FIELD, databaseIdString);
     }

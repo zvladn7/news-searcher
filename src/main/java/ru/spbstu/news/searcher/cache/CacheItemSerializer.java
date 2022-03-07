@@ -17,8 +17,8 @@ public class CacheItemSerializer {
 
     private static final Logger logger = LoggerFactory.getLogger(CacheItemSerializer.class);
 
-    private static final String DELIMITER = "~@~";
-    private static final String TOTAL_COUNT_DELIMITER = "@@@";
+    public static final String DELIMITER = "~@~";
+    public static final String TOTAL_COUNT_DELIMITER = "@@@";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static String serialize(@NotNull Collection<SearchCacheItem> cacheItems, Long totalCount) {

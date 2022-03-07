@@ -1,10 +1,7 @@
 package ru.spbstu.news.searcher.database;
 
 import com.google.common.collect.Iterables;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -19,6 +16,7 @@ import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
