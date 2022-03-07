@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import ru.spbstu.news.searcher.indexes.AnalyzerProvider;
 import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 import ru.spbstu.news.searcher.indexes.SearchIndexDocumentConverter;
-import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 
 import java.io.IOException;
 import java.util.Arrays;

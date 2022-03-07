@@ -28,11 +28,17 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SearchController {
 
-    @Autowired
-    private SearchResultService searchResultService;
+    private final SearchResultService searchResultService;
+    private final NewsCrawlerController newsCrawlerController;
 
     @Autowired
-    private NewsCrawlerController newsCrawlerController;
+    public SearchController(@NotNull SearchResultService searchResultService,
+                            @NotNull NewsCrawlerController newsCrawlerController) {
+        Validate.notNull(searchResultService);
+        Validate.notNull(newsCrawlerController);
+        this.searchResultService = searchResultService;
+        this.newsCrawlerController = newsCrawlerController;
+    }
 
     @PostMapping("/{page}")
     public ResponseEntity<FindByTextResult> findByText(@PathVariable(name = "page") Integer page,

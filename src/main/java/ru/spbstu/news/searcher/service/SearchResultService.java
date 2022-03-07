@@ -3,6 +3,7 @@ package ru.spbstu.news.searcher.service;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,6 @@ import ru.spbstu.news.searcher.indexes.exceptions.LuceneOpenException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,24 +57,18 @@ public class SearchResultService {
                                @NotNull final Cache cache,
                                @NotNull final ImageSearchResultsProcessor imageSearchResultsProcessor,
                                @NotNull final TextSearchResultsProcessor textSearchResultsProcessor) {
+        Validate.notNull(searchResultRepository);
+        Validate.notNull(indexSearcherComponent);
+        Validate.notNull(indexWriterComponent);
+        Validate.notNull(cache);
+        Validate.notNull(imageSearchResultsProcessor);
+        Validate.notNull(textSearchResultsProcessor);
         this.searchResultRepository = searchResultRepository;
         this.indexSearcherComponent = indexSearcherComponent;
         this.indexWriterComponent = indexWriterComponent;
         this.cache = cache;
         this.imageSearchResultsProcessor = imageSearchResultsProcessor;
         this.textSearchResultsProcessor = textSearchResultsProcessor;
-    }
-
-    public void createSearchResult(final SearchResult searchResult) {
-        searchResultRepository.save(searchResult);
-    }
-
-    public Optional<SearchResult> getSearchResultItemById(final Long id) {
-        return searchResultRepository.findById(id);
-    }
-
-    public void removeSearchResult(final SearchResult searchResult) {
-        searchResultRepository.delete(searchResult);
     }
 
     @NotNull
@@ -176,7 +170,7 @@ public class SearchResultService {
     /**
      * @param page should be greater than 0
      */
-    private int getStartIndexForImage(int page) {
+    protected int getStartIndexForImage(int page) {
         if (page == 1) {
             return 0;
         }
@@ -187,7 +181,7 @@ public class SearchResultService {
      * @param page should be greater than 0
      * @param page should be greater than 0
      */
-    private int getEndIndexForImage(int page, int startIndex) {
+    protected int getEndIndexForImage(int page, int startIndex) {
         if (page == 1) {
             return FIRST_IMAGE_PAGE_SIZE;
         }
