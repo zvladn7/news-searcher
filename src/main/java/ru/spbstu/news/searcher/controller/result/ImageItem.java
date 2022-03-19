@@ -1,17 +1,30 @@
 package ru.spbstu.news.searcher.controller.result;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
+
+import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@EqualsAndHashCode
+@NoArgsConstructor
+@Setter
 public class ImageItem {
 
-    private final long id;
-    private final String imageUrl;
-    private final String title;
-    private final String link;
+    private long id;
+    private String imageUrl;
+    private String title;
+    private String link;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImageItem imageItem = (ImageItem) o;
+        return id == imageItem.id && Objects.equals(imageUrl, imageItem.imageUrl) && Objects.equals(link, imageItem.link);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, imageUrl, link);
+    }
 }

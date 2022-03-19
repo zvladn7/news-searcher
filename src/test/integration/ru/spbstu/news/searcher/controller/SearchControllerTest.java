@@ -2,6 +2,7 @@ package ru.spbstu.news.searcher.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,11 +27,13 @@ import ru.spbstu.news.searcher.controller.result.FindImageResult;
 import ru.spbstu.news.searcher.controller.result.ImageItem;
 import ru.spbstu.news.searcher.controller.result.SearchItem;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
+@TestPropertySource(locations="classpath:test.properties")
 public class SearchControllerTest {
 
     private static final String URL = "https://sportmail.ru/news/hockey-khl/50472533/?frommail=1";
@@ -49,21 +53,20 @@ public class SearchControllerTest {
     private ObjectMapper mapper;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         this.mapper = new ObjectMapper();
+        storeTestData();
     }
 
     @Test
     public void findByText_NormalWork() throws Exception {
-        storeTestData();
         FindRequest findRequest = new FindRequest(QUERY, PAGE);
         String jsonFindRequest = mapper.writeValueAsString(findRequest);
         MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/" + PAGE)
                 .content(jsonFindRequest)
                 .contentType(CONTENT_TYPE);
         MvcResult mvcResult = this.mockMvc.perform(searchMessageRequestBuilder)
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -77,14 +80,12 @@ public class SearchControllerTest {
 
     @Test
     public void findImages() throws Exception {
-        storeTestData();
         FindRequest findRequest = new FindRequest(QUERY, PAGE);
         String jsonFindRequest = mapper.writeValueAsString(findRequest);
-        MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/" + PAGE)
+        MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/image")
                 .content(jsonFindRequest)
                 .contentType(CONTENT_TYPE);
         MvcResult mvcResult = this.mockMvc.perform(searchMessageRequestBuilder)
-                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -105,6 +106,21 @@ public class SearchControllerTest {
         this.mockMvc.perform(indexMessageRequestBuilder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @AfterClass
+    public static void close() {
+        deleteDirectory(new File("./indexTest"));
+    }
+
+    public static void deleteDirectory(File file)
+    {
+        for (File subfile : file.listFiles()) {
+            if (subfile.isDirectory()) {
+                deleteDirectory(subfile);
+            }
+            subfile.delete();
+        }
     }
 
     /**
