@@ -1,6 +1,5 @@
 package ru.spbstu.news.searcher.scanner;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Set;
