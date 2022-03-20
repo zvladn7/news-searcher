@@ -25,10 +25,8 @@ import ru.spbstu.news.searcher.database.SearchResultRepository;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
 public abstract class SearcherTest {
 
@@ -104,11 +102,6 @@ public abstract class SearcherTest {
         MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.get(path)
                 .contentType(CONTENT_TYPE);
         return this.mockMvc.perform(searchMessageRequestBuilder);
-    }
-
-    @AfterClass
-    public static void close() {
-        deleteDirectory(new File("./indexTest"));
     }
 
     public static void deleteDirectory(File file)

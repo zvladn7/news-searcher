@@ -1,9 +1,6 @@
 package ru.spbstu.news.searcher.crawler;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,13 +15,12 @@ import ru.spbstu.news.searcher.scanner.NewsCrawlerController;
 import ru.spbstu.news.searcher.service.SearchResultService;
 import ru.spbstu.news.searcher.util.SearcherTest;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
-@TestPropertySource(locations = "classpath:test.properties")
+@SpringBootTest(properties = { "indexer.indexDir=./indexText/CrawlerTest" })
 public class CrawlerTest extends SearcherTest {
 
     @Autowired
@@ -81,6 +77,11 @@ public class CrawlerTest extends SearcherTest {
         final List<String> images = searchResult.getImageUrls();
         Assert.assertTrue(images.size() > 0);
         Assert.assertTrue(images.contains(CORRECT_IMAGE_URL));
+    }
+
+    @AfterClass
+    public static void close() {
+        deleteDirectory(new File("./indexText/CrawlerTest"));
     }
 
 }

@@ -1,14 +1,19 @@
 package ru.spbstu.news.searcher.cache;
 
 import org.apache.commons.math3.util.Pair;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.spbstu.news.searcher.service.TitleExtractor;
 import ru.spbstu.news.searcher.util.SearcherTest;
 
+import java.io.File;
 import java.util.List;
 
+@SpringBootTest(properties = { "indexer.indexDir=./indexText/indexCacheTest" })
 public class CacheTest extends SearcherTest {
 
     @Autowired
@@ -16,12 +21,19 @@ public class CacheTest extends SearcherTest {
     @Autowired
     private TitleExtractor titleExtractor;
 
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        cache.invalidate(null);
+    }
+
     @Test
-    public void saveResultsToCacheTest() throws Exception {
+    public void saveResultsToCacheTest_GetResult() throws Exception {
         Long expectedCacheTotalCount = 1L;
         int expectedSearchCacheItemListSize = 1;
         int expectedImageUrls = 1;
         storeTestData();
+        Assert.assertNull(cache.get(QUERY));
         doRequestText();
         Pair<Long, List<SearchCacheItem>> cacheResult = cache.get(QUERY);
         Assert.assertNotNull(cacheResult);
@@ -35,6 +47,11 @@ public class CacheTest extends SearcherTest {
         Assert.assertNotNull(imageUrls);
         Assert.assertEquals(expectedImageUrls, imageUrls.size());
         Assert.assertEquals(IMAGE_URLS.get(0), imageUrls.get(0));
+    }
+
+    @AfterClass
+    public static void close() {
+        deleteDirectory(new File("./indexText/indexCacheTest"));
     }
 
 }

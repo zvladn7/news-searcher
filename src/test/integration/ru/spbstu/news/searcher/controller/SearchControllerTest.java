@@ -1,8 +1,10 @@
 package ru.spbstu.news.searcher.controller;
 
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -16,8 +18,10 @@ import ru.spbstu.news.searcher.controller.result.ImageItem;
 import ru.spbstu.news.searcher.controller.result.SearchItem;
 import ru.spbstu.news.searcher.util.SearcherTest;
 
+import java.io.File;
 import java.util.List;
 
+@SpringBootTest(properties = { "indexer.indexDir=./indexText/SearchControllerTest" })
 public class SearchControllerTest extends SearcherTest {
 
     @Test
@@ -64,11 +68,9 @@ public class SearchControllerTest extends SearcherTest {
 
     @Test
     public void crawlNews_ControllerResponse() throws Exception {
-        MvcResult mvcResult = doRequestCrawl()
+        doRequestCrawl()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        MockHttpServletResponse response = mvcResult.getResponse();
-        Assert.assertEquals(CONTENT_TYPE, response.getContentType());
         Assert.assertTrue(searchResultRepository.count() > 0);
     }
 
@@ -81,6 +83,11 @@ public class SearchControllerTest extends SearcherTest {
         this.mockMvc.perform(indexMessageRequestBuilder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @AfterClass
+    public static void close() {
+        deleteDirectory(new File("./indexText/SearchControllerTest"));
     }
 
     /**
