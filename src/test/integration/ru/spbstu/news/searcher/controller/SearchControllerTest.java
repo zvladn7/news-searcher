@@ -74,33 +74,9 @@ public class SearchControllerTest extends SearcherTest {
         Assert.assertTrue(searchResultRepository.count() > 0);
     }
 
-    public void storeTestData() throws Exception {
-        ItemToIndex itemToIndex = new ItemToIndex(URL, IMAGE_URLS, TEXT);
-        String jsonItemToIndex = mapper.writeValueAsString(itemToIndex);
-        MockHttpServletRequestBuilder indexMessageRequestBuilder = MockMvcRequestBuilders.post("/search/index")
-                .content(jsonItemToIndex)
-                .contentType(CONTENT_TYPE);
-        this.mockMvc.perform(indexMessageRequestBuilder)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-    }
-
     @AfterClass
     public static void close() {
         deleteDirectory(new File("./indexText/SearchControllerTest"));
     }
-
-    /**
-     * FYI: Починить траблы с индексами при запуске тестов
-     * -----
-     * тесты:
-     * 1. Тесты с неправильными запросами/параметры - NotFound, BadRequest
-     * 2. Тесты интеграции базы данных и индексов
-     * 3. Тесты на валидацию данных в кеше (пример, делаем запрос через контроллер -> проверям, что данные оказались кэше)
-     * 4. Интеграционные тест на кравлер (Илья - например, все новости из заданных источников)
-     * 5. подумать, что можно еще
-     * -----
-     * Настроить CI в GitHub Actions, чтобы запускался Docker
-     */
 
 }
