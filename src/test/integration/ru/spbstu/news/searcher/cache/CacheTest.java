@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.spbstu.news.searcher.scanner.NewsCrawlerController;
 import ru.spbstu.news.searcher.service.TitleExtractor;
 import ru.spbstu.news.searcher.util.SearcherTest;
 
@@ -20,6 +21,8 @@ public class CacheTest extends SearcherTest {
     private Cache cache;
     @Autowired
     private TitleExtractor titleExtractor;
+    @Autowired
+    private NewsCrawlerController newsCrawlerController;
 
     @Before
     public void setUp() throws Exception {
@@ -47,6 +50,15 @@ public class CacheTest extends SearcherTest {
         Assert.assertNotNull(imageUrls);
         Assert.assertEquals(expectedImageUrls, imageUrls.size());
         Assert.assertEquals(IMAGE_URLS.get(0), imageUrls.get(0));
+    }
+
+    @Test
+    public void resetCacheAfterUpdatingIndex() throws Exception {
+        storeTestData();
+        doRequestImages();
+        Assert.assertNotNull(cache.get(QUERY));
+        newsCrawlerController.launchCrawling();
+        Assert.assertNull(cache.get(QUERY));
     }
 
     @AfterClass
