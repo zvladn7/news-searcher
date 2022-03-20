@@ -1,6 +1,10 @@
 package ru.spbstu.news.searcher.crawler;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
