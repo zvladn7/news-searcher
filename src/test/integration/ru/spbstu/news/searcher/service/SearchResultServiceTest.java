@@ -1,6 +1,7 @@
 package ru.spbstu.news.searcher.service;
 
 import org.apache.commons.math3.util.Pair;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import ru.spbstu.news.searcher.indexes.SearchIndexDocument;
 import ru.spbstu.news.searcher.indexes.component.IndexSearcherComponent;
 import ru.spbstu.news.searcher.util.SearcherTest;
 
+import java.io.File;
 import java.util.List;
 
 @SpringBootTest(properties = { "indexer.indexDir=./indexText/SearchResultServiceTest" })
@@ -36,6 +38,11 @@ public class SearchResultServiceTest extends SearcherTest {
         SearchIndexDocument document = searchIndexDocuments.get(0);
         Assert.assertEquals(TEXT, document.getFullText());
         Assert.assertEquals(searchResult.getId(), document.getDatabaseId());
+    }
+
+    @AfterClass
+    public static void close() {
+        deleteDirectory(new File("./indexText/SearchResultServiceTest"));
     }
 
 }
