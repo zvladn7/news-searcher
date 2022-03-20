@@ -63,7 +63,7 @@ public class Cache implements Closeable {
         return CacheItemSerializer.deserialize(item);
     }
 
-    public void invalidate(@NotNull SearchIndexDocument document) {
+    public void invalidate(SearchIndexDocument document) {
         try {
             jedisPool.getResource().flushDB();
         } catch (JedisConnectionException ex) {

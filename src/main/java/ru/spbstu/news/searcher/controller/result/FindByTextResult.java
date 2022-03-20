@@ -1,15 +1,15 @@
 package ru.spbstu.news.searcher.controller.result;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class FindByTextResult {
 
-    private final List<SearchItem> searchItems;
-    private final long totalCount;
+    private List<SearchItem> searchItems;
+    private long totalCount;
 
 }

@@ -12,10 +12,12 @@ public class NewsCrawlerFactoryTest {
 
     @Mock
     private SearchResultService searchResultService;
+    @Mock
+    private CrawlerConfig crawlerConfig;
 
     @Test(expected = IllegalArgumentException.class)
     public void newsCrawlerFactoryTest_NullArgument() {
-        new NewsCrawlerFactory(null);
+        new NewsCrawlerFactory(null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -25,7 +27,7 @@ public class NewsCrawlerFactoryTest {
 
     @Test(expected = NullPointerException.class)
     public void newsCrawlerControllerTest_NullConfiguration() {
-        final NewsCrawlerFactory factory = new NewsCrawlerFactory(searchResultService);
+        final NewsCrawlerFactory factory = new NewsCrawlerFactory(searchResultService, crawlerConfig);
         final NewsCrawlerController controller = new NewsCrawlerController(factory);
         controller.configure(null);
     }
