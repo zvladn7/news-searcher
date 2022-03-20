@@ -1,12 +1,11 @@
 package ru.spbstu.news.searcher.crawler;
 
 import org.junit.*;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.spbstu.news.searcher.controller.result.FindByTextResult;
+import ru.spbstu.news.searcher.controller.result.FindImageResult;
+import ru.spbstu.news.searcher.controller.result.ImageItem;
 import ru.spbstu.news.searcher.controller.result.SearchItem;
 import ru.spbstu.news.searcher.database.SearchResult;
 import ru.spbstu.news.searcher.database.SearchResultRepository;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-@SpringBootTest(properties = { "indexer.indexDir=./indexText/CrawlerTest" })
+@SpringBootTest(properties = {"indexer.indexDir=./indexText/CrawlerTest"})
 public class CrawlerTest extends SearcherTest {
 
     @Autowired
@@ -77,6 +76,16 @@ public class CrawlerTest extends SearcherTest {
         final List<String> images = searchResult.getImageUrls();
         Assert.assertTrue(images.size() > 0);
         Assert.assertTrue(images.contains(CORRECT_IMAGE_URL));
+    }
+
+
+    @Test
+    public void crawlNews_SearchImage() throws ResultNotFoundException {
+        final FindImageResult result = searchResultService.findImages(PAGE, ARTICLE_TEXT);
+        final SearchResult savedItem = searchResultRepository.findAll().get(0);
+        Assert.assertEquals(result.getImageItems().size(), savedItem.getImageUrls().size());
+        final ImageItem foundImage = result.getImageItems().get(0);
+        Assert.assertEquals(savedItem.getImageUrls().get(0), foundImage.getImageUrl());
     }
 
     @AfterClass
