@@ -44,6 +44,7 @@ public class SearchControllerTest {
 
     private static final Integer PAGE = 1;
     private static final String QUERY = "динамо";
+    private static final String NOT_FOUND_QUERY = "not_found_query";
 
     private static final String CONTENT_TYPE = "application/json";
 
@@ -79,7 +80,7 @@ public class SearchControllerTest {
     }
 
     @Test
-    public void findImages() throws Exception {
+    public void findImages_NormalWork() throws Exception {
         FindRequest findRequest = new FindRequest(QUERY, PAGE);
         String jsonFindRequest = mapper.writeValueAsString(findRequest);
         MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/image")
@@ -95,6 +96,28 @@ public class SearchControllerTest {
         List<ImageItem> imageItems = textResult.getImageItems();
         ImageItem testImageItem = new ImageItem(1, IMAGE_URLS.get(0), "some title", URL);
         Assert.assertThat(imageItems, Matchers.hasItems(testImageItem));
+    }
+
+    @Test
+    public void findByText_NotFound() throws Exception {
+        FindRequest findRequest = new FindRequest(NOT_FOUND_QUERY, PAGE);
+        String jsonFindRequest = mapper.writeValueAsString(findRequest);
+        MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/" + PAGE)
+                .content(jsonFindRequest)
+                .contentType(CONTENT_TYPE);
+        this.mockMvc.perform(searchMessageRequestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void findImages_NotFound() throws Exception {
+        FindRequest findRequest = new FindRequest(NOT_FOUND_QUERY, PAGE);
+        String jsonFindRequest = mapper.writeValueAsString(findRequest);
+        MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post("/search/image")
+                .content(jsonFindRequest)
+                .contentType(CONTENT_TYPE);
+        this.mockMvc.perform(searchMessageRequestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     public void storeTestData() throws Exception {
