@@ -41,15 +41,19 @@ public class NewsCrawler extends WebCrawler {
 
     @NotNull
     private final SearchResultService searchResultService;
+    @NotNull
+    private final CrawlerConfig crawlerConfig;
 
-    public NewsCrawler(@NotNull final SearchResultService searchResultService) {
+    public NewsCrawler(@NotNull final SearchResultService searchResultService,
+                       @NotNull final CrawlerConfig crawlerConfig) {
         this.searchResultService = searchResultService;
+        this.crawlerConfig = crawlerConfig;
     }
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         final String href = url.getURL().toLowerCase();
-        for (String domain : CrawlerConfig.resources) {
+        for (String domain : crawlerConfig.getResources()) {
             if (href.startsWith(domain)) {
                 return !FILE_ENDING_EXCLUSION_PATTERN.matcher(href).matches();
             }
@@ -62,7 +66,7 @@ public class NewsCrawler extends WebCrawler {
         final String url = page.getWebURL().getURL();
         logger.info("URL: " + url);
 
-        if (page.getParseData() instanceof HtmlParseData && !CrawlerConfig.resources.contains(url)) {
+        if (page.getParseData() instanceof HtmlParseData) {
             final HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             final Document doc = Jsoup.parse(htmlParseData.getHtml());
             final String text = getText(doc);

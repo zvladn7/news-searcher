@@ -3,6 +3,8 @@ package ru.spbstu.news.searcher.indexes.component;
 import org.apache.commons.lang3.Validate;
 import org.apache.lucene.index.Term;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.spbstu.news.searcher.indexes.IndexPartitioner;
@@ -18,10 +20,13 @@ import ru.spbstu.news.searcher.indexes.indexer.LuceneIndexWriter;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.naming.OperationNotSupportedException;
+import java.io.File;
 import java.io.IOException;
 
 @Component
 public class IndexWriterComponent implements IndexerComponent {
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexWriterComponent.class);
 
     private final String indexDir;
     private final int partitions;
@@ -35,6 +40,7 @@ public class IndexWriterComponent implements IndexerComponent {
                                 @NotNull CacheInvalidator cacheInvalidator) throws LuceneIndexIllegalPartitions {
         Validate.notNull(indexDir);
         Validate.notNull(cacheInvalidator);
+        logger.info(new File("./").getAbsolutePath());
         this.cacheInvalidator = cacheInvalidator;
         if (partitions <= 0) {
             throw new LuceneIndexIllegalPartitions("Number of partitions is less than 0");

@@ -70,7 +70,7 @@ jobs:
 
 
   integration-tests:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -78,6 +78,8 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+      - name: Build the stack
+        run:  docker-compose -f ./docker/docker-compose.yaml up -d
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
