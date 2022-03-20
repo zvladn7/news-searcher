@@ -62,6 +62,16 @@ public class SearchControllerTest extends SearcherTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    public void crawlNews_ControllerResponse() throws Exception {
+        MvcResult mvcResult = doRequestCrawl()
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+        MockHttpServletResponse response = mvcResult.getResponse();
+        Assert.assertEquals(CONTENT_TYPE, response.getContentType());
+        Assert.assertTrue(searchResultRepository.count() > 0);
+    }
+
     public void storeTestData() throws Exception {
         ItemToIndex itemToIndex = new ItemToIndex(URL, IMAGE_URLS, TEXT);
         String jsonItemToIndex = mapper.writeValueAsString(itemToIndex);

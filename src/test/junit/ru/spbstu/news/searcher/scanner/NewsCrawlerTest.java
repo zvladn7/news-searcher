@@ -2,15 +2,18 @@ package ru.spbstu.news.searcher.scanner;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.url.WebURL;
+import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import ru.spbstu.news.searcher.service.SearchResultService;
 
+import java.util.List;
 import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -18,6 +21,8 @@ public class NewsCrawlerTest {
 
     @Mock
     private SearchResultService searchResultService;
+    @Mock
+    private CrawlerConfig crawlerConfig;
 
     private NewsCrawler newsCrawler;
 
@@ -33,7 +38,10 @@ public class NewsCrawlerTest {
 
     @Before
     public void before() {
-        newsCrawler = new NewsCrawler(searchResultService);
+        Mockito.doReturn(List.of("https://news.mail.ru/"))
+                .when(crawlerConfig)
+                .getResources();
+        newsCrawler = new NewsCrawler(searchResultService, crawlerConfig);
     }
 
     @Test(expected = NullPointerException.class)

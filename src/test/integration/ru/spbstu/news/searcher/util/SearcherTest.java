@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.spbstu.news.searcher.controller.request.FindRequest;
 import ru.spbstu.news.searcher.controller.request.ItemToIndex;
+import ru.spbstu.news.searcher.database.SearchResultRepository;
 
 import java.io.File;
 import java.util.Collections;
@@ -45,6 +46,8 @@ public abstract class SearcherTest {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
+    @Autowired
+    protected SearchResultRepository searchResultRepository;
     protected MockMvc mockMvc;
     protected ObjectMapper mapper;
 
@@ -81,6 +84,10 @@ public abstract class SearcherTest {
         return doRequest("/search/image", query);
     }
 
+    public ResultActions doRequestCrawl() throws Exception {
+        return doGetRequest("/search/crawl");
+    }
+
     public ResultActions doRequest(@NotNull String path,
                                    @NotNull String query) throws Exception {
         Validate.notNull(path);
@@ -88,6 +95,13 @@ public abstract class SearcherTest {
         String jsonFindRequest = mapper.writeValueAsString(findRequest);
         MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.post(path)
                 .content(jsonFindRequest)
+                .contentType(CONTENT_TYPE);
+        return this.mockMvc.perform(searchMessageRequestBuilder);
+    }
+
+    public ResultActions doGetRequest(@NotNull String path) throws Exception {
+        Validate.notNull(path);
+        MockHttpServletRequestBuilder searchMessageRequestBuilder = MockMvcRequestBuilders.get(path)
                 .contentType(CONTENT_TYPE);
         return this.mockMvc.perform(searchMessageRequestBuilder);
     }
