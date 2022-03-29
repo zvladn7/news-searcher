@@ -50,7 +50,8 @@ dependencies {
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.8.0'
-
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.1.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -83,12 +84,28 @@ sourceSets {
             srcDirs = ["src/test/integration"]
         }
     }
+    uiTest {
+        java {
+            srcDirs = ["src/test/ui"]
+            outputDir = file("${buildDir}/uiTestClasses")
+            compileClasspath += test.output
+            compileClasspath += main.output
+            compileClasspath += test.compileClasspath
+        }
+        resources {
+            srcDirs = ["src/test/ui"]
+        }
+    }
 }
 
 task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath += sourceSets.integrationTest.runtimeClasspath
-//    reports.junitXml.enabled = true
+}
+
+task uiTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
 tasks.withType(Test) {
