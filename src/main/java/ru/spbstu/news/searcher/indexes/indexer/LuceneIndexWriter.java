@@ -55,7 +55,7 @@ public class LuceneIndexWriter implements IndexerComponent {
             IndexWriterConfig indexWriterConfig = new IndexWriterConfig(AnalyzerProvider.provide());
             this.indexWriter = new IndexWriter(indexDirectory, indexWriterConfig);
         } catch (IOException e) {
-            throw new LuceneOpenException("Cannot create IndexWriter with indexDir={}" + indexDir, e);
+            throw new LuceneOpenException("Cannot create IndexWriter with indexDir=" + indexDir, e);
         }
     }
 
