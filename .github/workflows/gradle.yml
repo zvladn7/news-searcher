@@ -117,12 +117,12 @@ jobs:
       - run: ls
       - uses: borales/actions-yarn@v2.3.0
         with:
-          cmd: install # will run `yarn install` command
+          cmd: --cwd ./client install # will run `yarn install` command
       - run: ls
       - run: pwd
       - uses: borales/actions-yarn@v2.3.0
         with:
-          cmd: start # will run `yarn start` command
+          cmd: --cwd ./client start # will run `yarn start` command
       - run: cd ..
       - name: Cache Gradle packages
         uses: actions/cache@v2
