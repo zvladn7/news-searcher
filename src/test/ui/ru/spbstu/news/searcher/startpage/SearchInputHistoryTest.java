@@ -1,6 +1,6 @@
-package startpage;
+package ru.spbstu.news.searcher.startpage;
 
-import base.BaseTest;
+import ru.spbstu.news.searcher.base.BaseTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;

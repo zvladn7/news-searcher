@@ -1,6 +1,6 @@
-package startpage;
+package ru.spbstu.news.searcher.startpage;
 
-import base.BaseTest;
+import ru.spbstu.news.searcher.base.BaseTest;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -27,8 +27,6 @@ public class SearchStartPageTest extends BaseTest {
     public void searchButton_enabledOnTextInput() {
         WebElement input = getSearchInput();
         input.sendKeys("text for search");
-//        WebDriverWait wait = new WebDriverWait(driver,30);
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("search-button")));
         Assert.assertTrue(getSearchButton().isDisplayed());
     }
 
