@@ -182,7 +182,7 @@ jobs:
 
   publish-ui-test-results:
     name: "Publish UI Tests Results"
-    needs: ui-tests
+    needs: end-to-end-tests
     runs-on: macos-latest
     # the build-and-test job might be skipped, we don't need to run this job then
     if: success() || failure()
