@@ -104,8 +104,8 @@ task integrationTest(type: Test) {
 }
 
 task uiTest(type: Test) {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath
+    testClassesDirs = sourceSets.ui.output.classesDirs
+    classpath += sourceSets.ui.runtimeClasspath
 }
 
 tasks.withType(Test) {
