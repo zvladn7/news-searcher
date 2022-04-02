@@ -117,6 +117,17 @@ jobs:
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: --cwd ./client start & # will run `yarn start` command
+      - name: Install ChromeDriver
+        run: |
+            CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1) \
+              && CHROMEDRIVER_RELEASE=$(curl --location --fail --retry 3 http://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}) \
+              && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
+              && cd /tmp \
+              && unzip chromedriver_linux64.zip \
+              && rm -rf chromedriver_linux64.zip \
+              && sudo mv chromedriver /usr/local/bin/chromedriver \
+              && sudo chmod +x /usr/local/bin/chromedriver \
+              && chromedriver --version
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
@@ -165,6 +176,22 @@ jobs:
         with:
           path: artifacts
       - name: Publish Integration Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: artifacts/**/*.xml
+
+  publish-ui-test-results:
+    name: "Publish UI Tests Results"
+    needs: ui-tests
+    runs-on: macos-latest
+    # the build-and-test job might be skipped, we don't need to run this job then
+    if: success() || failure()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+      - name: Publish UI Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
           files: artifacts/**/*.xml
