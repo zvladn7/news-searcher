@@ -112,7 +112,7 @@ jobs:
       - name: Build the stack
         run:  docker-compose -f ./docker/docker-compose.yaml up -d
       - run: ls
-      - run: cd ./client
+      - run: cd client
       - run: pwd
       - run: ls
       - uses: borales/actions-yarn@v2.3.0
