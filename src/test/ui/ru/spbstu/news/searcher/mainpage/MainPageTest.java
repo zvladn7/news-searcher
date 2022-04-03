@@ -37,7 +37,7 @@ public class MainPageTest extends BaseWithSpringTest {
 
     @AfterClass
     public static void close() {
-        deleteDirectory(new File("./indexText/indexCacheTest"));
+        deleteDirectory(new File("./indexText/MainPageTest"));
     }
 
     public static void deleteDirectory(File file) {
