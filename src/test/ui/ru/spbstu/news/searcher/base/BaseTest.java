@@ -25,7 +25,11 @@ public abstract class BaseTest {
         WebDriverManager webDriverManager = WebDriverManager.chromedriver();
         webDriverManager.setup();
 
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
 
 //        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 //
