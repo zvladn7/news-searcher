@@ -126,7 +126,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
       - name: Run tests with Gradle
-        run: ./gradlew uiTest
+        run: ./gradlew uiTest --tests "ru.spbstu.news.searcher.TestSuite"
       - name: Upload ui Test Results
         if: always()
         uses: actions/upload-artifact@v2
