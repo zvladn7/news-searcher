@@ -63,16 +63,17 @@ public class LanguageChangeTest extends BaseWithSpringTest {
             storeTestData();
         }
         changeLanguageToRuIfNeed();
-        prepareTextResults();
     }
 
     @Test
     public void checkLanguageRU() {
+        prepareTextResults();
         checkLanguage(RU);
     }
 
     @Test
     public void checkLanguageEN() {
+        prepareTextResults();
         getLanguageButton().click();
         checkLanguage(EN);
     }
