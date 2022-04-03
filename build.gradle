@@ -50,13 +50,23 @@ dependencies {
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.8.0'
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-json', version: '4.1.2'
 
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// https://mvnrepository.com/artifact/edu.uci.ics/crawler4j
 	implementation 'edu.uci.ics:crawler4j:4.2'
+    // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
+    testImplementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.1.0'
 	// https://mvnrepository.com/artifact/org.jsoup/jsoup
 	implementation 'org.jsoup:jsoup:1.14.3'
 }
@@ -83,12 +93,28 @@ sourceSets {
             srcDirs = ["src/test/integration"]
         }
     }
+    uiTest {
+        java {
+            srcDirs = ["src/test/ui"]
+            outputDir = file("${buildDir}/uiTestClasses")
+            compileClasspath += test.output
+            compileClasspath += main.output
+            compileClasspath += test.compileClasspath
+        }
+        resources {
+            srcDirs = ["src/test/ui"]
+        }
+    }
 }
 
 task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath += sourceSets.integrationTest.runtimeClasspath
-//    reports.junitXml.enabled = true
+}
+
+task uiTest(type: Test) {
+    testClassesDirs = sourceSets.uiTest.output.classesDirs
+    classpath += sourceSets.uiTest.runtimeClasspath
 }
 
 tasks.withType(Test) {
