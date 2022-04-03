@@ -12,8 +12,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.concurrent.TimeUnit;
-
 public abstract class BaseTest {
 
     protected WebDriver driver;
@@ -22,7 +20,7 @@ public abstract class BaseTest {
     @Before
     public void setUpClass() {
         mapper = new ObjectMapper();
-        WebDriverManager webDriverManager = WebDriverManager.chromedriver();
+        WebDriverManager webDriverManager = WebDriverManager.chromedriver().driverVersion("99");
         webDriverManager.setup();
 
         ChromeOptions options = new ChromeOptions();
