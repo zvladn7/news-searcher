@@ -20,7 +20,7 @@ public abstract class BaseTest {
     @Before
     public void setUpClass() {
         mapper = new ObjectMapper();
-        WebDriverManager webDriverManager = WebDriverManager.chromedriver().driverVersion("100");
+        WebDriverManager webDriverManager = WebDriverManager.chromedriver().driverVersion("96");
         webDriverManager.setup();
 
         ChromeOptions options = new ChromeOptions();
