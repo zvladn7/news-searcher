@@ -117,6 +117,7 @@ public class LanguageChangeTest extends BaseWithSpringTest {
         if (LANGUAGE_EN.equals(localStorage.getItem(LANGUAGE_LOCAL_STORAGE_KEY))) {
             localStorage.setItem(LANGUAGE_LOCAL_STORAGE_KEY, LANGUAGE_RU);
         }
+        driver.navigate().refresh();
     }
 
 
