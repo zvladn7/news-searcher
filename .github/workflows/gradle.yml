@@ -111,12 +111,10 @@ jobs:
           distribution: 'temurin'
       - name: Build the stack
         run:  docker-compose -f ./docker/docker-compose.yaml up -d
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: --cwd ./client install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: --cwd ./client start & # will run `yarn start` command
+      - name: install yarn dependencies
+        run:  yarn --cwd ./client install # will run `yarn install` command
+      - name: run yarn
+        run:  yarn --cwd ./client start & # will run `yarn start` command
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
