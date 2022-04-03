@@ -63,6 +63,7 @@ public class LanguageChangeTest extends BaseWithSpringTest {
             storeTestData();
         }
         changeLanguageToRuIfNeed();
+        Thread.sleep(5);
     }
 
     @Test
