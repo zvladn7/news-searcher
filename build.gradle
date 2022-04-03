@@ -51,11 +51,14 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.8.0'
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.1.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '4.1.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '4.1.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: '4.1.0'
-    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-json', version: '4.1.0'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-api', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: '4.1.2'
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-json', version: '4.1.2'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
