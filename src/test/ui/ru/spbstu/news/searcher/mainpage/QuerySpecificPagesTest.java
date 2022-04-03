@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.spbstu.news.searcher.base.BaseTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@TestPropertySource(locations = "classpath:ui-test.properties")
 @SpringBootTest(
         properties = {
                 "indexer.indexDir=./indexText/MainPageTest",

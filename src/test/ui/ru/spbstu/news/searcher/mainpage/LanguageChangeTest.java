@@ -1,17 +1,22 @@
 package ru.spbstu.news.searcher.mainpage;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.WebStorage;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.spbstu.news.searcher.base.BaseWithSpringTest;
 import ru.spbstu.news.searcher.mainpage.components.Navigator;
 
 import java.util.Locale;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource(locations = "classpath:ui-test.properties")
 @SpringBootTest(
         properties = {
                 "indexer.indexDir=./indexText/LanguageChangeTest",
@@ -63,7 +68,6 @@ public class LanguageChangeTest extends BaseWithSpringTest {
             storeTestData();
         }
         changeLanguageToRuIfNeed();
-        Thread.sleep(5);
     }
 
     @Test

@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@TestPropertySource(locations = "classpath:ui-test.properties")
 @SpringBootTest(
         properties = {
                 "indexer.indexDir=./indexText/MainPageTest",

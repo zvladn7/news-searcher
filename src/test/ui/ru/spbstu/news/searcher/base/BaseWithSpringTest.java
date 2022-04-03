@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(locations = "classpath:test.properties")
+@TestPropertySource(locations = "classpath:ui-test.properties")
 public abstract class BaseWithSpringTest extends BaseTest {
 
     protected static final String URL = "https://sportmail.ru/news/hockey-khl/50472533/?frommail=1";
