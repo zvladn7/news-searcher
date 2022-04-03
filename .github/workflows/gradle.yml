@@ -128,10 +128,14 @@ jobs:
 #            && sudo mv chromedriver /usr/local/bin/chromedriver \
 #            && sudo chmod +x /usr/local/bin/chromedriver \
 #            && chromedriver --version
-      - uses: nanasess/setup-chromedriver@v1
-        with:
-          # Optional: do not specify to match Chrome's version
-          chromedriver-version: '88.0.4324.96'
+#      - uses: nanasess/setup-chromedriver@v1
+#        with:
+#          # Optional: do not specify to match Chrome's version
+#          chromedriver-version: '88.0.4324.96'
+      - name: Install Google Chrome
+        run: |
+          chmod +x ./scripts/InstallChrome.sh
+          ./scripts/InstallChrome.sh
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
