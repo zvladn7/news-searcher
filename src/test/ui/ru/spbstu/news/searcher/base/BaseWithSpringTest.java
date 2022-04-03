@@ -63,12 +63,12 @@ public abstract class BaseWithSpringTest extends BaseTest {
     }
 
     public void waitTextResults() {
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.className(SearchTextContent.SEARCH_CONTENT_ITEM_CLASS)));
     }
 
     public void waitImageResults() {
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.className(SearchImageContent.SEARCH_CONTENT_ITEM_CLASS)));
     }
 
