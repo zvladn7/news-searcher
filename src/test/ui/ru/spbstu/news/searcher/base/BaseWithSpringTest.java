@@ -57,6 +57,7 @@ public abstract class BaseWithSpringTest extends BaseTest {
 
 
     public void prepareTextResults() {
+        getSearchInput().clear();
         getSearchInput().sendKeys(QUERY);
         getSearchButton().click();
         waitTextResults();
