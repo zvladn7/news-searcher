@@ -2,8 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  labels:
+    name: database
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
   template:
     metadata:
       labels:
@@ -12,8 +17,10 @@ spec:
       containers:
         - name: postgres
           image: postgres:11
-          ports:
-            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-volume-mount
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
           env:
             - name: POSTGRES_DB
               value: searcher
@@ -21,10 +28,8 @@ spec:
               value: searcher
             - name: POSTGRES_PASSWORD
               value: 123
-          volumeMounts:
-            - mountPath: "/var/lib/postgresql/data"
-              name: "searcher-pgdata"
+      restartPolicy: Always
       volumes:
-        - hostPath:
-            path: "/home/docker/pgdata"
-          name: searcher-pgdata
+        - name: postgres-volume-mount
+          persistentVolumeClaim:
+            claimName: postgres-pvc
