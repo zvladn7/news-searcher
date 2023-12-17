@@ -17,7 +17,7 @@ spec:
     spec:                                               # Spec for the containers that will run inside the Pods
       containers:
         - name: corona-tracker-frontend
-          image: zvladn7/searcher-frontend:1.0.0
+          image: zvladn7/searcher-frontend:1.0.1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000                           # Should match the Port that the container listens on
