@@ -15,6 +15,8 @@ RUN npm cache clean --force
 RUN yarn install --frozen-lockfile
 #RUN yarn build
 
+RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
+
 # add app
 COPY . ./
 
